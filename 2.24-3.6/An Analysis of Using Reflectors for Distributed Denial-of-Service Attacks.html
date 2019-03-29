@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>An Analysis of Using Reflectors for Distributed Denial-of-Service Attacks</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="j8x9" id="an-analysis-of-using-reflectors-for-distributed-denial-of-service-attacks">An Analysis of Using Reflectors for Distributed Denial-of-Service Attacks</h1><p data-anchor-id="fvrb"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="emzs" id="paxson-vern-an-analysis-of-using-reflectors-for-distributed-denial-of-service-attacksj-acm-sigcomm-computer-communication-review-2001-31338">Paxson, Vern. An analysis of using reflectors for distributed denial-of-service attacks[J]. ACM SIGCOMM Computer Communication Review, 2001, 31(3):38.</h2><p data-anchor-id="p3a5">本文先讲解了DDoS攻击，再讲解基于reflector的DDoS攻击，最后基于各种网络协议的字段进行挨个分析，讲解哪些字段容易受到attacker的利用从而进行攻击。</p><p data-anchor-id="m1l5">DDoS攻击结构： <br>
+<img src="https://s2.ax1x.com/2019/02/22/kWRdRU.png" alt="kWRdRU.png" title=""></p><p data-anchor-id="jfkc">使用反射器的DDoS攻击 <br>
+<a href="https://imgchr.com/i/kWRwzF" target="_blank"><img src="https://s2.ax1x.com/2019/02/22/kWRwzF.md.png" alt="kWRwzF.md.png" title=""></a></p><p data-anchor-id="aj0i">各协议可能被攻击的字段分析 <br>
+ip ：Type of Service <br>
+TCP:If the reflector’s stack has guessable  TCP sequence numbers <br>
+ICMP: reflectors generating ICMP messages can likely be filtered out. <br>
+UDP:port number can be filtered. <br>
+DNS:递归查询，欺骗查询 <br>
+http: would be a significant threat were it not for the likely quick traceback due to the non-spoofed connection from the slave to the proxy. Definitely a significant threat if servers running on stacks with predictable sequence numbers are widely deployed. <br>
+Other TCP application: would be a significant threat were it not for the likely quick traceback due to the non-spoofed connection from the slave to the proxy. Definitely a significant threat if servers running on stacks with predictable sequence numbers are widely deployed. <br>
+原文值得细看，不错的文章，就是语法太难了。</p></div>
+</body>
+</html>
