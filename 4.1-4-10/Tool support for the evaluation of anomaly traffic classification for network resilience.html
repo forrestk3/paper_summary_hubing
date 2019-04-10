@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Tool support for the evaluation of anomaly traffic classification for network resilience</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="xgi7" id="tool-support-for-the-evaluation-of-anomaly-traffic-classification-for-network-resilience">Tool support for the evaluation of anomaly traffic classification for network resilience</h1><p data-anchor-id="12lu"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="nd2k" id="silva-a-s-d-wickboldt-j-a-schaefferfilho-a-et-al-tool-support-for-the-evaluation-of-anomaly-traffic-classification-for-network-resiliencec-computers-communication-2015">Silva A S D, Wickboldt J A, Schaefferfilho A, et al. Tool support for the evaluation of anomaly traffic classification for network resilience[C]// Computers &amp; Communication. 2015.</h2><p data-anchor-id="09mw">觉得本文一般，作者对PReSET这篇论文提出的工具进行修改。PReSET是一个对网络可恢复力评估的一个工具，本文利用它来进行流量分类算法的评估。</p><div class="md-section-divider"></div><h1 data-anchor-id="if0a" id="introduction">Introduction</h1><p data-anchor-id="sdaf">PReSET是一个可以离线评估的工具，网络管理员可以据此对网络配置进行优化，本文对PReSET进行拓展，将其作为工具，并使其可以分析多个异常分类的算法。（意思就是他对别人的东西稍稍加了点东本。）</p><div class="md-section-divider"></div><h1 data-anchor-id="ly18" id="preseta-network-resilience-simulator">PRESET:A network resilience simulator</h1><p data-anchor-id="9m2v">PRESET是基于OMNeT++网络模拟器和Ponder2策略框架的一个整合，支持网络攻击的模拟和对相应恢复策略的评估。PReSET可以找到最优策略并找出最优配置参数。在OMNeT++中运行的策略程序产生事件，这些事件指的是一个观测条件，如检测到一个异常。事件可触发条事件行为，这个行为决定哪个策力应该被重新配置和如何配置，XML-RPL 服务器对每个策力提供管理接口。Ponder2使用这些接口进行管理以及适应当前网络，如：调整参数。本文使用K-means和NaiveBayes进行测试。</p><div class="md-section-divider"></div><h1 data-anchor-id="v18h" id="实现和实验结果">实现和实验结果</h1><div class="md-section-divider"></div><h2 data-anchor-id="rr18" id="prototype-implementation-and-evaluation-set-up">Prototype implementation and evaluation set-up</h2><p data-anchor-id="wrdl"><a href="https://imgchr.com/i/AoncFS" target="_blank"><img src="https://s2.ax1x.com/2019/04/09/AoncFS.png" alt="AoncFS.png"></a> <br>
+图1是分类器和PReSET整合的整体视图，Classifier与FlowExporter共同运作，Classifier(可以是多个)定期从FlowExporter抽取流特征的统计并进行分类，当有恶意流出现时，一个事件就会发送给Ponder2,ECA policies就会决定如何修改网络配置，这里XMLRPC就是交互接口。本实验中模拟的DDoS，其基本信息在表1中。<img src="https://s2.ax1x.com/2019/04/09/Aourc9.png" alt="Aourc9.png"> <br>
+模拟实验中有912个主机和82个网络服务器，188个routers，流量参数见表2。 <br>
+<img src="https://s2.ax1x.com/2019/04/09/AoubHP.png" alt="AoubHP.png" title=""> <br>
+843个流中有32个恶意流，已被标记每个都是单向的。</p><div class="md-section-divider"></div><h2 data-anchor-id="un8v" id="preliminary-analysis-and-feature-selection">Preliminary analysis and feature selection</h2><p data-anchor-id="goad">每个流都由5元组表示（dIP,sIP,dPORT,sPORT,prot），收集特征为：packet count,byte count,flow duration,mean packet inter-arrival-time。每个特征的二组分布图见图2. <br>
+<a href="https://imgchr.com/i/AoK0VP" target="_blank"><img src="https://s2.ax1x.com/2019/04/09/AoK0VP.md.png" alt="AoK0VP.md.png"></a> <br>
+由图可见，packet count和 byte count可以更好地区分流。</p><div class="md-section-divider"></div><h2 data-anchor-id="u5nj" id="k-means分析">K-means分析</h2><p data-anchor-id="bqbx">当设置k=2时结果如图3,恶意流都被区分，但也有部分良性流被区分为恶意流。当k=3时，之前被误分的流现在被分为一个新类，结果见图4,这就很好地将流区分开了。图6是分类结果评估， <br>
+<a href="https://imgchr.com/i/AoKva6" target="_blank"><img src="https://s2.ax1x.com/2019/04/09/AoKva6.md.png" alt="AoKva6.md.png"></a> <br>
+<img src="https://s2.ax1x.com/2019/04/09/AoMpGD.png" alt="AoMpGD.png"> <br>
+该算法的缺点是确定中心点个数比较困 难，如图5中k=5，这时恶性流被强行分为了两类，也就是过拟合。 <br>
+<a href="https://imgchr.com/i/AoMkqI" target="_blank"><img src="https://s2.ax1x.com/2019/04/09/AoMkqI.md.png" alt="AoMkqI.md.png"></a></p><div class="md-section-divider"></div><h2 data-anchor-id="zu9a" id="naive-bayes-analysis">Naive Bayes analysis</h2><p data-anchor-id="k9uz">该方法作为一个补充方法，单独提供训练集，上一节的流作为测试集，结果见图7,当结果为0时这里将其处理为良性流。 <br>
+<img src="https://s2.ax1x.com/2019/04/09/AoMowt.png" alt="AoMowt.png"> <br>
+结果评估见图8 <br>
+<img src="https://s2.ax1x.com/2019/04/09/AoQm01.png" alt="AoQm01.png" title=""></p></div>
+</body>
+</html>
