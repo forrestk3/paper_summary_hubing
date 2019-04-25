@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SD-Anti-DDoS: Fast and efficient DDoS defense in software-defined networks</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="zy0s" id="sd-anti-ddos-fast-and-efficient-ddos-defense-in-software-defined-networks">SD-Anti-DDoS: Fast and efficient DDoS defense in software-defined networks</h1><p data-anchor-id="zoyi"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="9vhb" id="cui-y-yan-l-li-s-et-al-sd-anti-ddos-fast-and-efficient-ddos-defense-in-software-defined-networksj-journal-of-network-and-computer-applications-2016-68-65-79">Cui Y, Yan L, Li S, et al. SD-Anti-DDoS: Fast and efficient DDoS defense in software-defined networks[J]. Journal of Network and Computer Applications, 2016, 68: 65-79.</h2><p data-anchor-id="n561">本文提出一种针对DDoS攻击的检测与缓解机制，由四部份组成：attack detection trigger,attack detection,attack traceback,attack mitigation。本文质量一般，不过packet_in trigger提出觉得有点创新。</p><div class="md-section-divider"></div><h1 data-anchor-id="uyzr" id="introduction">introduction</h1><p data-anchor-id="xmh4">本文通过trigger来触发检测算法进行检测，检测到后再分析switch是否为恶意攻击的路径，再结合全局拓扑和受攻击者IP找到恶意流的源switch，从源进行缓解。 <br>
+整体架构如图4： <br>
+<img src="https://s2.ax1x.com/2019/04/24/EVIjL4.png" alt="EVIjL4.png" title=""> <br>
+init state:检测packet_in是否有异常。 <br>
+detecxtion state:检测DDoS是否发生。 <br>
+Traceback State:检测包攻击路径 <br>
+Mitigation state:根据找到的source switch进行缓解。</p><ul data-anchor-id="bc84">
+<li>1.发生异常</li>
+<li>2.没检测到DDoS攻击</li>
+<li>3.检测到DDoS攻击</li>
+<li>4.没找到攻击包路径</li>
+<li>5.path,source switch被找到</li>
+<li>6.清理完成。</li>
+</ul><p data-anchor-id="8jps">图5为组件和工作流程图 <br>
+<a href="https://imgchr.com/i/EVorXF" target="_blank"><img src="https://s2.ax1x.com/2019/04/24/EVorXF.md.png" alt="EVorXF.md.png" title=""></a> <br>
+由图可见本机制的4部分合作关系下面分别介绍这四部份。</p><div class="md-section-divider"></div><h2 data-anchor-id="rft5" id="attack-detection-trigger">Attack detection trigger</h2><p data-anchor-id="sb6t">本部份主要检测packet_in是否有异常的数据量峰值包括两部份：<strong>消息容量计算，消息容量异常检测</strong>，使用的是exact-STORM算法，它使用的一种Indexed Trream Buffer(ISB)的数据结构，ISB以节点的形式存储信息，主要结构为：</p><ul data-anchor-id="zd8v">
+<li>n.obj: packet_in消息的velocity，其实就是时间间隔到达的包数除以时间间隔。</li>
+<li>n.id</li>
+<li>n.count_after: buffer中其他点与当前点的V在一定范围内的个数。</li>
+<li>n.nn_before: 最相近的指定个节点id组成的列表。</li>
+</ul><p data-anchor-id="dm1y">packet_in消息异常检测流程和算法如图6和A1： <br>
+<a href="https://imgchr.com/i/EV7NR0" target="_blank"><img src="https://s2.ax1x.com/2019/04/24/EV7NR0.md.png" alt="EV7NR0.md.png" title=""></a> <br>
+<img src="https://s2.ax1x.com/2019/04/24/EV7UzV.png" alt="EV7UzV.png" title=""> <br>
+算法和流程图讲的是一个东西。当指定数据的packet_in包到达后计算该时间间隔的包体积V（就是包数除以时间），并使用exact-STORM来检测是否异常。 <br>
+exact-STORM算法如A2： <br>
+<img src="https://s2.ax1x.com/2019/04/24/EV7jOS.png" alt="EV7jOS.png" title=""> <br>
+本算法中，如果buffer中包与本包的V差值在R之内的个数+与本包V值最近的几个包数(没说几个)&lt;某个值，则本包被视为游离包，返回异常。 <br>
+使用本触发方法比定期触发更节省资源。</p><div class="md-section-divider"></div><h2 data-anchor-id="4ibt" id="attack-detection">Attack detection</h2><p data-anchor-id="z3xl">本文使用的检测算法：BPNN（没具体讲算法怎么用。）输入层5,隐藏层10,输出层1.输入特征为：流项的包数，流项的字节数，流项的包率，流项的字节率，流项的生存时间。具体流程见图7： <br>
+<a href="https://imgchr.com/i/EVO8Cd" target="_blank"><img src="https://s2.ax1x.com/2019/04/24/EVO8Cd.md.png" alt="EVO8Cd.md.png" title=""></a> <br>
+解释：对每个流抽取特征并检测，如果是恶意流：存dIP，如果恶意流数量超过一定值：找到最可能的dIP，停止分析。</p><div class="md-section-divider"></div><h2 data-anchor-id="2k6y" id="attack-traceback">attack traceback</h2><p data-anchor-id="u0iw">利用前一阶段获得的信息进行路径发现和路径源头。具体流程见图8 <br>
+<a href="https://imgchr.com/i/EVORbT" target="_blank"><img src="https://s2.ax1x.com/2019/04/24/EVORbT.md.png" alt="EVORbT.md.png" title=""></a> <br>
+这里再次使用BPNN算法，计算S中的每个流，如果恶意流数量超过一定值而将该S定为恶意S，再根据dIP，恶意S和全局拓扑找到source。</p><div class="md-section-divider"></div><h2 data-anchor-id="h7ee" id="attack-mitigation">attack mitigation</h2><p data-anchor-id="4w4u">目的：阻寒攻击流量。 <br>
+在source给恶意流量以最高优先级插入丢弃策略，流项见图9 <br>
+<img src="https://s2.ax1x.com/2019/04/24/EVXVIg.png" alt="EVXVIg.png" title=""></p><div class="md-section-divider"></div><h1 data-anchor-id="b049" id="评价">评价</h1><p data-anchor-id="cwf7">RYU中，使用25个S，200个host，重要参数设置见表2 <br>
+<a href="https://imgchr.com/i/EVX0L6" target="_blank"><img src="https://s2.ax1x.com/2019/04/24/EVX0L6.md.png" alt="EVX0L6.md.png" title=""></a></p><div class="md-section-divider"></div><h2 data-anchor-id="ta4t" id="整体性能评估">整体性能评估</h2><p data-anchor-id="6qqp">表3各模块启动时间，图10：CPU使用率，图11控制器网络负载 <br>
+<img src="https://s2.ax1x.com/2019/04/24/EVXWQI.png" alt="EVXWQI.png"> <br>
+<img src="https://s2.ax1x.com/2019/04/24/EVXfyt.png" alt="EVXfyt.png" title=""> <br>
+<img src="https://s2.ax1x.com/2019/04/24/EVX5ef.png" alt="EVX5ef.png" title=""></p><p data-anchor-id="bt3b">表4为寻找路径结果 <br>
+<img src="https://s2.ax1x.com/2019/04/24/EVXHYQ.png" alt="EVXHYQ.png" title=""> <br>
+找到两条路径：e11-a3-c1-a2-e6和e16-a4-c1-a2-e6 <br>
+表5为在block前后controller接收率的变化 <br>
+<img src="https://s2.ax1x.com/2019/04/24/EVXzwT.png" alt="EVXzwT.png" title=""></p><div class="md-section-divider"></div><h2 data-anchor-id="rm5n" id="结果性能对比">结果性能对比</h2><p data-anchor-id="spsm">1.本文的优点：触发型检测，可删除S中的entries（没有具体的性能对比），对比见表6 <br>
+<a href="https://imgchr.com/i/EVjklR" target="_blank"><img src="https://s2.ax1x.com/2019/04/24/EVjklR.md.png" alt="EVjklR.md.png" title=""></a> <br>
+2.比较trigger和periodic的性对，本文只是自己跟自己比，没有跟别人比。 <br>
+<a href="https://imgchr.com/i/EVjUAS" target="_blank"><img src="https://s2.ax1x.com/2019/04/24/EVjUAS.md.png" alt="EVjUAS.md.png" title=""></a></p><p data-anchor-id="gf0i">Comput.NetW.这个怎么样？</p></div>
+</body>
+</html>

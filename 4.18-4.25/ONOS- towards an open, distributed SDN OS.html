@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ONOS: towards an open, distributed SDN OS</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="smo0" id="onos-towards-an-open-distributed-sdn-os">ONOS: towards an open, distributed SDN OS</h1><p data-anchor-id="pz7w"><code>sdn</code></p><div class="md-section-divider"></div><h2 data-anchor-id="exhs" id="pankaj-berde-matteo-gerola-jonathan-hart-yuta-higuchi-masayoshi-kobayashi-toshio-koide-bob-lantz-brian-oconnor-pavlin-radoslavov-william-snow-and-guru-parulkar-2014-onos-towards-an-open-distributed-sdn-os-in-proceedings-of-the-third-workshop-on-hot-topics-in-software-defined-networking-hotsdn-14-acm-new-york-ny-usa-1-6">Pankaj Berde, Matteo Gerola, Jonathan Hart, Yuta Higuchi, Masayoshi Kobayashi, Toshio Koide, Bob Lantz, Brian O'Connor, Pavlin Radoslavov, William Snow, and Guru Parulkar. 2014. ONOS: towards an open, distributed SDN OS. In Proceedings of the third workshop on Hot topics in software defined networking (HotSDN '14). ACM, New York, NY, USA, 1-6.</h2><p data-anchor-id="poye">本文主要是评估两种ONOS控制器设计模式：高可用与高性能。</p><div class="md-section-divider"></div><h1 data-anchor-id="s1ro" id="基本知识">基本知识</h1><p data-anchor-id="diph">网络操作系统（NOS）需要满足：高吞吐量，低延迟，全局网络视图，高可用。 <br>
+ONOS提供：全局网络视图，逻辑中心化，开源，开发原型有两种：1.高可用；2.高性能。 <br>
+flag见图1： <br>
+<a href="https://imgchr.com/i/EAB93V" target="_blank"><img src="https://s2.ax1x.com/2019/04/23/EAB93V.md.png" alt="EAB93V.md.png"></a></p><div class="md-section-divider"></div><h1 data-anchor-id="79dj" id="两种原型的实现和测试">两种原型的实现和测试</h1><div class="md-section-divider"></div><h2 data-anchor-id="wg00" id="protype1network-view-scale-outfault-tolerance">Protype1:network view scale-out,fault tolerance</h2><div class="md-section-divider"></div><h3 data-anchor-id="gm45" id="实现">实现</h3><p data-anchor-id="493o">使用floodlight里面的模型组合，加构如图2. <br>
+<img src="https://s2.ax1x.com/2019/04/23/EABn9x.png" alt="EABn9x.png"></p><ul data-anchor-id="5nc9">
+<li>全局网络状态视图：ONOS收集网络状态(switch,port,link,host information)构建全局视图，应用利用该视图进行决策。如图所示，使用Titan图数据库，Cassandra存储数据库，由于cassandra有一致性保证，所以网络视图也是一致的。</li>
+<li>Scale-out:分布式ONOS，每个ONOS负责一部分Switch,并传递全局网络视图，当S增多时可动态地添加ONOS</li>
+<li>Fault tolerance:当一个ONOS失效时，当前的ONOS从其实例中找leader接管。每个S有多个C连接，但只有一个C对其进行控制，当选举C时需要一致以保证每个S只有一个C控制，这里使用Zookeeper来对此进行控制。</li>
+</ul><div class="md-section-divider"></div><h3 data-anchor-id="76h0" id="评估">评估</h3><p data-anchor-id="vlz9">本模型实现了四个月，其基本特征与不足：</p><ul data-anchor-id="cdir">
+<li>Consistency and Integrity：可以保证一致性。</li>
+<li>low performance and visibility:性能经想像中的差得多。</li>
+<li>Data Model Issues:将所有的数据对象(flow entries,ports,..)建模成顶点，维护下标十分耗时，初始化和批处理的效率低，Titan与Cassandra的映射会导致多余的操作。</li>
+<li>Polling:对数据库的实时池化影响对事件的响应效率。</li>
+<li>lesson learned：教训：需要更高效的数据模型，提高数据存储操作效率以提高节点间的通信速度。</li>
+</ul><div class="md-section-divider"></div><h2 data-anchor-id="xo9x" id="protype-2improving-performance">Protype 2:improving performance</h2><div class="md-section-divider"></div><h3 data-anchor-id="x76r" id="实现-1">实现</h3><p data-anchor-id="ujss">第一次失败后又来：第一次的瓶颈为：远程数据操作，我们的改进办法为：1.使操作更快；2.减少操作数量。框架图见图3： <br>
+<img src="https://s2.ax1x.com/2019/04/23/EArM0e.png" alt="EArM0e.png"></p><ul data-anchor-id="f61e">
+<li>RAMCloud Data Store:使用Blueprints graph implementation替换Titan，该方式更快。</li>
+<li>Optimized Data Model:对每一个数据对象(switch,link,flow entry)建表，以降低更新是不必要的连接，该优化减少元素间不必要的关系。</li>
+<li>Topology Cache：将拓扑存在第一个Controller的内存中，减少远程读取。使用notification-based replication scheme维护拓扑机制，每个实例对拓扑的更新都被定义为原子操作。</li>
+<li>Event Notifications:当事件发生时，使用通知的方式发送给C，如：拓扑结构的改变，flow installation,packet-out。</li>
+<li>Network View API:用专为网络使用的API替代Blueprints graph API，我们的API有三类：topology,events,path installation图4为应用对网络的视图。 <br>
+<img src="https://s2.ax1x.com/2019/04/23/EAskDS.png" alt="EAskDS.png"></li>
+</ul><div class="md-section-divider"></div><h3 data-anchor-id="z5yw" id="评估-1">评估</h3><p data-anchor-id="1ctk">对三个方面进行评估：基本网络状态改变；对网络事件的响应；路径插入。</p><div class="md-section-divider"></div><h4 data-anchor-id="3h2q" id="basic-network-state-changes">Basic Network State Changes</h4><p data-anchor-id="eghe">此处测试当网络状态改变时测延迟和吞吐量。 <br>
+实验环境：81 switches,3 ONOS，计算在网络视图中添加一个S需要的时间，结果见表1<a href="https://imgchr.com/i/EAsR2t" target="_blank"><img src="https://s2.ax1x.com/2019/04/23/EAsR2t.png" alt="EAsR2t.png"></a> <br>
+1为：原来的数据模型； <br>
+2：基于1，改进数据模型后的结果。 <br>
+3：基于2：使用Google Protocol Buffers加快序列化时间 <br>
+4：基于3：使用优化网络I/O和无限制带宽。</p><div class="md-section-divider"></div><h4 data-anchor-id="mgj0" id="reaction-to-network-events">Reaction to network events</h4><p data-anchor-id="ex8a">实验环境：6 ONOS，206 switch,416 links,16000流。我们使一个switch的端口不可用，导致1000个流重新计算路由，从6跳变为7跳。测量的两个指标：1.第一个flow_mod发出的时间；2.所有的flow_mod发完的时间。结果见表2： <br>
+<img src="https://s2.ax1x.com/2019/04/23/EAySZF.png" alt="EAySZF.png"></p><div class="md-section-divider"></div><h4 data-anchor-id="o44i" id="path-installation">path installation</h4><p data-anchor-id="f9di">处理应用请求并更新网络状态，本处测试应用下发流表的速度。 <br>
+实验细节：前一个实验的基本拓扑，15000预装流，添加1000 6-hop 流，测量吞吐量和延迟。表3人结果。 <br>
+<img src="https://s2.ax1x.com/2019/04/23/EAyuIH.png" alt="EAyuIH.png"> <br>
+吞吐量的结果为：18832 paths/sec。</p><div class="md-section-divider"></div><h3 data-anchor-id="ycua" id="利用改进的onos布署internet2">利用改进的ONOS布署Internet2</h3><p data-anchor-id="jkc7">布署结果和ONOS视图展视如图5和图6. <br>
+<a href="https://imgchr.com/i/EA6fHS" target="_blank"><img src="https://s2.ax1x.com/2019/04/23/EA6fHS.md.png" alt="EA6fHS.md.png"></a> <br>
+<a href="https://imgchr.com/i/EA6OBT" target="_blank"><img src="https://s2.ax1x.com/2019/04/23/EA6OBT.md.png" alt="EA6OBT.md.png"></a></p></div>
+</body>
+</html>
