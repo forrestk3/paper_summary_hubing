@@ -5,8 +5,8 @@
 <title>FRESCO:Modular Composable Security Services for Software-Defined Networks</title>
 </head>
 <body>
-<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="yb2y" id="frescomodular-composable-security-services-for-software-defined-networks">FRESCO:Modular Composable Security Services for Software-Defined Networks</h1><p data-anchor-id="nr5u"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="qul2" id="shin-s-w-porras-p-yegneswara-v-et-al-fresco-modular-composable-security-services-for-software-defined-networksc20th-annual-network-distributed-system-security-symposium-ndss-2013">Shin S W, Porras P, Yegneswara V, et al. Fresco: Modular composable security services for software-defined networks[C]//20th Annual Network &amp; Distributed System Security Symposium. NDSS, 2013.</h2><p data-anchor-id="z220">本文提供了一个应用框架FRESCO，可供研究人员和开发代人员更简单地实现各种检测、缓解模块。</p><div class="md-section-divider"></div><h1 data-anchor-id="8w4i" id="基本介绍">基本介绍</h1><p data-anchor-id="p23d">它提供API，可用来调用Module,Module是各种安全功能，如:firewall,scan detector,attack deflector,IDS detection logic。当前提供16个Module，每个Module有5个接口：input,output,event,parameter,action，M之间可以配合使用以实现更复杂的应用。</p><ul data-anchor-id="92sw">
-<li><p>由于Controller不存TCP公话信息而分析却需要，FRESCO-DG存储和管理这些并在FRESCO应用之间共享。</p></li>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="yb2y" id="frescomodular-composable-security-services-for-software-defined-networks">FRESCO:Modular Composable Security Services for Software-Defined Networks</h1><p data-anchor-id="nr5u"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="qul2" id="shin-s-w-porras-p-yegneswara-v-et-al-fresco-modular-composable-security-services-for-software-defined-networksc20th-annual-network-distributed-system-security-symposium-ndss-2013">Shin S W, Porras P, Yegneswara V, et al. Fresco: Modular composable security services for software-defined networks[C]//20th Annual Network &amp; Distributed System Security Symposium. NDSS, 2013.</h2><p data-anchor-id="z220">本文提供了一个应用框架FRESCO，可供研究人员和开发代人员更简单地实现各种检测、缓解模块。</p><div class="md-section-divider"></div><h1 data-anchor-id="8w4i" id="基本介绍">基本介绍</h1><p data-anchor-id="p23d">它提供API，可用来调用Module,Module是各种安全功能，如:firewall,scan detector,attack reflector,IDS detection logic。当前提供16个Module，每个Module有5个接口：input,output,event,parameter,action，M之间可以配合使用以实现更复杂的应用。</p><ul data-anchor-id="92sw">
+<li><p>由于Controller不存TCP会话信息而分析却需要，FRESCO-DG存储和管理这些并在FRESCO应用之间共享。</p></li>
 <li><p>FRESCO的功能模块化可通过共享数据和事件调用API来驱动。</p></li>
 <li>FRESCO可将检测结果转为规则（可能很复杂）</li>
 </ul><p data-anchor-id="1cls"><strong>FRESCO的架构图如图1</strong> <br>
@@ -17,7 +17,7 @@
 <li>parameter:模块的配置参数</li>
 <li>action:模块要对网络包或流进行的操作</li>
 <li>event:模块的触发事件</li>
-</ul><p data-anchor-id="0rpa">举个粟子：一个丢度所有HTTP包的应用。它由两个模块组成，结构图如图2. <br>
+</ul><p data-anchor-id="0rpa">举个粟子：一个丢弃所有HTTP包的应用。它由两个模块组成，结构图如图2. <br>
 <a href="https://imgchr.com/i/ECOfSS" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/ECOfSS.md.png" alt="ECOfSS.md.png"></a> <br>
 第一个Module: <br>
 input:包的端口值，parameter:80,event:当有新流到达时触发，output:端口值与80的比较结果 <br>
@@ -27,10 +27,11 @@ input:第一个M的输出，action:drop或forward。</p><p data-anchor-id="zzme"
 <li>Database management:收集网络或switch状态，并提供接口给实例调用，也可用来暂存实例。</li>
 <li>Event management:当指定事件发生时激活实例，也提供API供应用产生事件。事件有：flow arrivals,denied connections,session resets.</li>
 <li>Instance execution:加载实例到内存并运行。加载时利用公钥解密并验计ID。</li>
-</ul><div class="md-section-divider"></div><h3 data-anchor-id="5j4n" id="fresco-resource-controllerrc">FRESCO Resource Controller(RC)</h3><p data-anchor-id="16q7">监控switches并跟踪状态，当FRESCO要插表但表满，就会删旧表。不要功能：1.定期收集switch状态；2.垃圾处理，当表快满了（超过指定thresh）删除最长时间未用的表。</p><div class="md-section-divider"></div><h3 data-anchor-id="q78k" id="fresco-script-language">FRESCO Script Language</h3><p data-anchor-id="h8ka">脚本语言需要定义六个变量：type：需要实例化模型的类型,input,output,parameter,action,event。每个变量可定义多值，用逗号分割。变量总结在表1中。图3是对图2中的例子用脚本语言描述。 <br>
+</ul><div class="md-section-divider"></div><h3 data-anchor-id="5j4n" id="fresco-resource-controllerrc">FRESCO Resource Controller(RC)</h3><p data-anchor-id="16q7">监控switches并跟踪状态，当FRESCO要插表但表满，就会删旧表。需要功能：1.定期收集switch状态；2.垃圾处理，当表快满了（超过指定thresh）删除最长时间未用的表。</p><div class="md-section-divider"></div><h3 data-anchor-id="q78k" id="fresco-script-language">FRESCO Script Language</h3><p data-anchor-id="h8ka">脚本语言需要定义六个变量：type：需要实例化模型的类型,input,output,parameter,action,event。每个变量可定义多值，用逗号分割。变量总结在表1中。图3是对图2中的例子用脚本语言描述。 <br>
 <img src="https://s2.ax1x.com/2019/04/20/EPSomF.png" alt="EPSomF.png"> <br>
-<a href="https://imgchr.com/i/EPS7TJ" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPS7TJ.md.png" alt="EPS7TJ.md.png"></a> <br>
-图4是对应的脚本执行：1.生成脚本；2.加载到FRESCO；3.switch收到符合条件的包；4.报告事件；5，6创建实例并加载；7.发action到FRESCO；8.将action转成rule并插入switch。</p><div class="md-section-divider"></div><h2 data-anchor-id="bdva" id="fresco-security-enforcement-kernelsek">FRESCO Security Enforcement Kernel(SEK)</h2><p data-anchor-id="gp3d">SEK解决：1.流表冲突，保证安全流表优先级；2.解决set action会绕过规则的问题：如set action可能过虚拟隧道绕过禁止两主机建立连接的问题，这个在[31]中更详细说明。 <br>
+<a href="https://imgchr.com/i/EZHLid" target="_blank"><img src="https://s2.ax1x.com/2019/04/25/EZHLid.md.png" alt="EZHLid.md.png"></a> <br>
+图4是对应的脚本执行：1.生成脚本；2.加载到FRESCO；3.switch收到符合条件的包；4.报告事件；5，6创建实例并加载；7.发action到FRESCO；8.将action转成rule并插入switch。 <br>
+<a href="https://imgchr.com/i/EZHjzt" target="_blank"><img src="https://s2.ax1x.com/2019/04/25/EZHjzt.md.png" alt="EZHjzt.md.png"></a></p><div class="md-section-divider"></div><h2 data-anchor-id="bdva" id="fresco-security-enforcement-kernelsek">FRESCO Security Enforcement Kernel(SEK)</h2><p data-anchor-id="gp3d">SEK解决：1.流表冲突，保证安全流表优先级；2.解决set action会绕过规则的问题：如set action可能过虚拟隧道绕过禁止两主机建立连接的问题，这个在[31]中更详细说明。 <br>
 解决问题1需要的特征：</p><ul data-anchor-id="gz9s">
 <li>规则源识别，FRESCO对规则进行数据签名，以便SEK识别。</li>
 <li>Rule conflict detection:SEK中的检测算法检测规则冲突；详见附录A1</li>
@@ -39,35 +40,35 @@ input:第一个M的输出，action:drop或forward。</p><p data-anchor-id="zzme"
 FRESCO SEK是NOX源码的一个扩展，C++代码，修改send_openflow_command用来接收应用rule并将其发到switch,修改的目的是解决冲突问题，保证安全规则被插入到switch中。</p><div class="md-section-divider"></div><h2 data-anchor-id="jew2" id="工作实例">工作实例：</h2><div class="md-section-divider"></div><h3 data-anchor-id="9bix" id="implementing-reflector-net">Implementing Reflector Net</h3><p data-anchor-id="pfmx">实现一个反射网，将布置该服务的OF网转接到远程蜜罐。 </p><ul data-anchor-id="h69x">
 <li>检测实例：检测网络扫描，当TCP_Connection：Fail值数到达一个阈值时触发实例，如图5左.其输出作为第二个实例的输入。参数有：input,output：两个，sIP和检测结果,parameter:扫描算法的参数，设为5.,action：无</li>
 <li>重定向实例：将恶意扫描转到蜜罐，图5右。当scan_result=1时将重定向所有的源IP。 <br>
-<a href="https://imgchr.com/i/EPe9JO" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPe9JO.md.png" alt="EPe9JO.md.png" title=""></a> <br>
+<a href="https://imgchr.com/i/EPe9JO" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPe9JO.md.png" alt="EPe9JO.md.png"></a> <br>
 图6为测试，主机2扫描4,包被交付到S时S将统计发送给FRESCO，检测到扫描将包重定向到3,3将结果返回给扫描者2,完成防御。 <br>
-<img src="https://s2.ax1x.com/2019/04/20/EPeZwt.png" alt="EPeZwt.png" title=""></li>
+<img src="https://s2.ax1x.com/2019/04/20/EPeZwt.png" alt="EPeZwt.png"></li>
 </ul><div class="md-section-divider"></div><h3 data-anchor-id="wi2w" id="cooperating-with-a-legacy-security-application">Cooperating with a Legacy Security Application</h3><p data-anchor-id="df1t">与其他应用协作可将其他应用的alert信息利用action转成流规则。传递的消息格式有两种：FRESCO类型：MESSAGE_LEGACY:FRESCO;标准格式类型：MESSAGE_LEGACY:IDMEF。 <br>
 例：见图7,1.攻击者咸染C；2.BotHunter检测到；3.BotHunter发message给FRESCO；4.5.FRESCO根据结果实现检疫action;6.c被隔离。 <br>
-<a href="https://imgchr.com/i/EPeqtf" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPeqtf.md.png" alt="EPeqtf.md.png" title=""></a> <br>
+<a href="https://imgchr.com/i/EPeqtf" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPeqtf.md.png" alt="EPeqtf.md.png"></a> <br>
 botHunter使用FRESCO API传递感染信息包括：victim_ip,confidence_score，当score大于thresh时执行隔离，实现脚本见图8 <br>
 <a href="https://imgchr.com/i/EPmSns" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPmSns.md.png" alt="EPmSns.md.png"></a></p><div class="md-section-divider"></div><h2 data-anchor-id="8rcq" id="评估实例">评估实例：</h2><p data-anchor-id="m93w">评价环境：mininet:i3CPU,4G RAM;SEK:HP ProCurve 6600 OF-enable switch 。本部分有三个应用：</p><div class="md-section-divider"></div><h3 data-anchor-id="dst5" id="fresco-scan-service">FRESCO Scan Service</h3><p data-anchor-id="75po">扫描检测，见图10 <br>
 <img src="https://s2.ax1x.com/2019/04/20/EPnfLd.png" alt="EPnfLd.png"> <br>
 三个模块代码量为：205pythonk,24 script。 <br>
 三个模块内容为：检测是否在表中；在：交付，不在：检测；是否扫描：是重定向，否：交付。 <br>
 图11为相应的脚本。 <br>
-<a href="https://imgchr.com/i/EPnqSS" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPnqSS.md.png" alt="EPnqSS.md.png" title=""></a></p><div class="md-section-divider"></div><h3 data-anchor-id="7pg9" id="fresco-botminer-service">FRESCO BotMiner Service</h3><p data-anchor-id="xux8">图12为BotMiner实现；图13为相应脚本；321行python,40行script. <br>
+<a href="https://imgchr.com/i/EPnqSS" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPnqSS.md.png" alt="EPnqSS.md.png"></a></p><div class="md-section-divider"></div><h3 data-anchor-id="7pg9" id="fresco-botminer-service">FRESCO BotMiner Service</h3><p data-anchor-id="xux8">图12为BotMiner实现；图13为相应脚本；321行python,40行script. <br>
 <img src="https://s2.ax1x.com/2019/04/20/EPunFx.png" alt="EPunFx.png"> <br>
-<a href="https://imgchr.com/i/EPullD" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPullD.md.png" alt="EPullD.md.png" title=""></a></p><div class="md-section-divider"></div><h3 data-anchor-id="whhk" id="fresco-p2p-plotter-service">FRESCO P2P Plotter Service</h3><p data-anchor-id="o6m8">P2P恶意软件发现。恶意软件特征：低volume,低churn。 <br>
+<a href="https://imgchr.com/i/EPullD" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPullD.md.png" alt="EPullD.md.png"></a></p><div class="md-section-divider"></div><h3 data-anchor-id="whhk" id="fresco-p2p-plotter-service">FRESCO P2P Plotter Service</h3><p data-anchor-id="o6m8">P2P恶意软件发现。恶意软件特征：低volume,低churn。 <br>
 图14,15为说明图和脚本 <br>
-<img src="https://s2.ax1x.com/2019/04/20/EPuaff.png" alt="EPuaff.png" title=""> <br>
-<a href="https://imgchr.com/i/EPuB6g" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPuB6g.md.png" alt="EPuB6g.md.png" title=""></a></p><div class="md-section-divider"></div><h2 data-anchor-id="5lwu" id="评估">评估</h2><p data-anchor-id="5h6j">1.代码量 <br>
+<img src="https://s2.ax1x.com/2019/04/20/EPuaff.png" alt="EPuaff.png"> <br>
+<a href="https://imgchr.com/i/EPuB6g" target="_blank"><img src="https://s2.ax1x.com/2019/04/20/EPuB6g.md.png" alt="EPuB6g.md.png"></a></p><div class="md-section-divider"></div><h2 data-anchor-id="5lwu" id="评估">评估</h2><p data-anchor-id="5h6j">1.代码量 <br>
 比较FRESCO和非FRESCO实现的应用。 <br>
 用FRESCO实现[24]中的算法并与其比较，表2为比较结果，其中FRESCO的代码量大大减少。 <br>
 <img src="https://s2.ax1x.com/2019/04/20/EPuqtx.png" alt="EPuqtx.png"> <br>
 2.资源消耗</p><ul data-anchor-id="xtkb">
 <li>下发流表耗时比较 <br>
 5个FRESCO应用与NOX的比较，结果见表3 <br>
-<img src="https://s2.ax1x.com/2019/04/20/EPKPAI.png" alt="EPKPAI.png" title=""> <br>
+<img src="https://s2.ax1x.com/2019/04/20/EPKPAI.png" alt="EPKPAI.png"> <br>
 FRESCO更 耗时一些，但这是运行在mininet中，如果在物理机上会减少很多耗时。</li>
 <li>垃圾收集 <br>
 FRESCO垃圾收集器阈值设为0.75,比较流表中项的个数见图16,使用FRESCO时维持在一个数，而不使用则一直涨。 <br>
-<img src="https://s2.ax1x.com/2019/04/20/EPKuHs.png" alt="EPKuHs.png" title=""></li>
+<img src="https://s2.ax1x.com/2019/04/20/EPKuHs.png" alt="EPKuHs.png"></li>
 </ul></div>
 </body>
 </html>

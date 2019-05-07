@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Veriflow: Verifying network-wide invariants in real time</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="50vm" id="veriflow-verifying-network-wide-invariants-in-real-time">Veriflow: Verifying network-wide invariants in real time</h1><p data-anchor-id="a563"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="hr3k" id="khurshid-a-zou-x-zhou-w-et-al-veriflow-verifying-network-wide-invariants-in-real-timecpresented-as-part-of-the-10th-usenix-symposium-on-networked-systems-design-and-implementation-nsdi-13-2013-15-27">Khurshid A, Zou X, Zhou W, et al. Veriflow: Verifying network-wide invariants in real time[C]//Presented as part of the 10th {USENIX} Symposium on Networked Systems Design and Implementation ({NSDI} 13). 2013: 15-27.</h2><ul data-anchor-id="b59l">
+<li><p>当前网络debugging的挑战 <br>
+<img src="https://groups.geni.net/geni/chrome/site/thumbnails/wiki/TangoGENI/OF-VLAN3715_1000.jpg" alt=""></p>
+
+<ol><li>复杂的交互</li>
+<li>错误配置</li>
+<li>不可知bug</li>
+<li>在布署前测试网络状态很麻烦</li></ol></li>
+<li><p>网络错误对网络的影响</p>
+
+<ol><li>允许未授权包进入安全网络区域</li>
+<li>使服务和基础设施易被攻击</li>
+<li>服务不可用</li>
+<li>影响网络性能</li></ol></li>
+<li><p>网络debugging技术</p>
+
+<ol><li><p>当前网络 debuging:trafic/flow monitoring,then configuration verification，图示如下： <br>
+<img src="https://s2.ax1x.com/2019/05/06/EDC3q0.png" alt="EDC3q0.png"> <br>
+问题：预测困难：大量配置语言，动态分布的协议；预测失败：Contro平面会有bug</p></li>
+<li><p>我们的办法：Data-plane Verification <br>
+<img src="https://s2.ax1x.com/2019/05/06/EDC2Je.png" alt="EDC2Je.png"> <br>
+更少预测，与网络行为更接近对控制平面协议统一分析，可以捕获控制平面bug。</p></li></ol></li>
+<li><p>当前的Data Plane 验证方法：FlowChecker,Anteater,Header Space Analysis，这些都太慢，需要几秒到几小时，它们在造成损失后才检测出问题。</p></li>
+<li>实时检测的问题： <br>
+<ol><li>网络的实时视图：SDN可以解决问题</li>
+<li>Verification 速度：Off-the-shelf太慢，我们的方法：VeriFlow。</li></ol></li>
+</ul><div class="md-section-divider"></div><h1 data-anchor-id="y034" id="veriflow">VeriFlow</h1><ul data-anchor-id="0qii">
+<li>监控网络的动态</li>
+<li>构建网络行为模型</li>
+<li>使用定制算法计算当前网络是否有错</li>
+</ul><div class="md-section-divider"></div><h2 data-anchor-id="l5az" id="veriflow操作步骤">VeriFlow操作步骤</h2><p data-anchor-id="0exa">图1为VeriFlow机制 <br>
+<a href="https://imgchr.com/i/EDFAq1" target="_blank"><img src="https://s2.ax1x.com/2019/05/06/EDFAq1.md.png" alt="EDFAq1.md.png"></a> <br>
+如图所示，首先拦截控制器规则</p><ol data-anchor-id="wrxk">
+<li>使用新规则和已存在的重叠规则将网络切片成EC(等价类)，找到会因新规则改变的EC</li>
+<li>为每个被修改的EC构建交付图(forwarding graph)</li>
+<li>验证交付图是否正常，正常：good rule。不正常：alarm <br>
+下面对这三个步骤分别解释：</li>
+</ol><div class="md-section-divider"></div><h2 data-anchor-id="oyxr" id="将网络切成等价类ecequivalence-classes">将网络切成等价类EC（equivalence classes）</h2><p data-anchor-id="pmci">当验证网络属性时如果用整个data plane会导致效率低无实时性，本文使用切片的方法只验证受新规则影响的那部分。</p><ul data-anchor-id="9c0l">
+<li>EC：等价类，本质是一个包集，该集内包均通过相同的网络设备看个例子：S内原有两条规则：11.1.0.0/16和12.1.0.0/16,现在来了一个新规则：11.0.0.0/8,那么11.1/16这个规则受影响，这两个有重叠的规则产生了三个EC：11.0.0.0~11.0.255.255,11.1.0.0~11.1.255.255,11.2.255.255~11.255.255.255。 <br>
+为了更快地寻找规则的交叉，使用multi-dimensional prefix trie来存储规则，如图2： <br>
+<a href="https://imgchr.com/i/EsUP4P" target="_blank"><img src="https://s2.ax1x.com/2019/05/07/EsUP4P.md.png" alt="EsUP4P.md.png"></a> <br>
+该树存储交付规则，每一层存储1位，每个节点有三个分支：0.1,X。树为多个子树组合而成，每个子树为包头的一个域：DL_SRC,DL_DST,NW_SRC,NW_DST,IN_PORT等。当有 新规则到来时就在每个dimension查找包含集。 <br>
+<a href="https://imgchr.com/i/EsUtb9" target="_blank"><img src="https://s2.ax1x.com/2019/05/07/EsUtb9.md.png" alt="EsUtb9.md.png" title=""></a></li>
+</ul><div class="md-section-divider"></div><h2 data-anchor-id="8pl6" id="使用交付图模型化交付状态">使用交付图模型化交付状态</h2><p data-anchor-id="vjki">对每个EC重走一遍trie来构建交付图，图节点表示设备，有向边表示包经过的方向，构建的时候要兼顾可能影响包的其他规则，如：rule 0.0.0.0/8如果它的优先级够高的话就可能影响其他规则。</p><div class="md-section-divider"></div><h2 data-anchor-id="olpf" id="running-queries">Running queries</h2><p data-anchor-id="ywyj">veriflow维护一些invarients，并以此EC。Veriflow提供API以便加入invarients。利用invarients可检测：可达性，无环，一致性，黑洞，隔离性，冲突等。检测到违规可以drop或alarm。</p><p data-anchor-id="gkat">最影响veriflow验证时间的因素：ECs被影响的数量，也就是一条操作影响大量网络行为。通常做法是先插规则，再检测，因为： <br>
+1. 这种情况通常为链路断开 <br>
+2. 检查到不合理还可以alarm或移除规则 <br>
+3. 这种情况的重要性通常超过alarm。 <br>
+4. 很少发生。</p><div class="md-section-divider"></div><h1 data-anchor-id="82x9" id="实现">实现</h1><ul data-anchor-id="dt2d">
+<li>透明布署的两种方式：代理，与NOX整合（本文使用的方式）将veriflow整合到NOX里，拦截所有发送给<em>send_openflolw_command()</em>和<em>hyanddle_flow_removed()</em>的消息并重定向到veriflow，消息有：OFPFC_ADD,OFPFC_MODIFY_STRICT,OFPFC_DELETE_STRICT,OFPFC_MODIFY,OFPFC_DELETE.</li>
+<li>提供API，可用于：GetAffectedEquivalenceClasses,GetForwardingGraph,ProcessCurrentHop.</li>
+</ul><div class="md-section-divider"></div><h1 data-anchor-id="w3i0" id="评估">评估</h1><p data-anchor-id="rw87">实验设备：Dell Optiplex 9010,Intel Core i7 3770 CPU,4 physical cores,8 thread 3.4GHz,32G RAM,64 bit Ubuntu 11.10.</p><ul data-anchor-id="upvs">
+<li><p>评估结果图3如下： <br>
+<a href="https://imgchr.com/i/EsjLwT" target="_blank"><img src="https://s2.ax1x.com/2019/05/07/EsjLwT.md.png" alt="EsjLwT.md.png" title=""></a> <br>
+图3a可见：veriflow可平均0.38ms验证updates，query平均0.01ms，图3b可见：EC数影响验证时间，而大多数update只影响少数EC。 <br>
+测试拓扑改变时影响的EC数，将原拓扑中的381条链路一个一个断开，发现断链路影响很多的EC，平均处理时间1.15秒。 <br>
+图3c显示验证时间受验证域个数影响，域增加会显然影响验证时间。表1中可见域的顺序也影响着验证时间，这个作为future研究。 <br>
+<img src="https://s2.ax1x.com/2019/05/07/Esvwn0.png" alt="Esvwn0.png" title=""> <br>
+图3d可见，rule冲突检测很快，平均时间0.305ms。</p></li>
+<li><p>对网络性能的影响 <br>
+见图4. <br>
+<a href="https://imgchr.com/i/Esvyh4" target="_blank"><img src="https://s2.ax1x.com/2019/05/07/Esvyh4.md.png" alt="Esvyh4.md.png" title=""></a> <br>
+图4a可见有无veriflow时对TCP连接成功率没有及大影响。 <br>
+图4b可见有无veriflow时flow_mod数。 <br>
+其中veriflow会略微增大TCP延迟。 <br>
+图4C可见增加域数量会增加验证时间。其中，影响时间最大的5个域为：DL_SRC，DL_DST，NW_SRC，NW_DST，DL_TYPE</p></li>
+</ul><p data-anchor-id="hsiz">与[17]比较，本文的时间更短。</p><p data-anchor-id="oq2c">这篇提出的东西虽然不是太难，但是论文还是很难懂的，有的句子更本不知道什么意思，我感觉到英语是个问题了。</p></div>
+</body>
+</html>
