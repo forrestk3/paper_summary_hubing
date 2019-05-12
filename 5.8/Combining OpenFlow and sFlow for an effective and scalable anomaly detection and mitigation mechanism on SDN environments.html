@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Combining OpenFlow and sFlow for an effective and scalable anomaly detection and mitigation mechanism on SDN environments</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="l89m" id="combining-openflow-and-sflow-for-an-effective-and-scalable-anomaly-detection-and-mitigation-mechanism-on-sdn-environments">Combining OpenFlow and sFlow for an effective and scalable anomaly detection and mitigation mechanism on SDN environments</h1><p data-anchor-id="qlea"><code>security</code> <br>
+Giotis K, Argyropoulos C, Androulidakis G, et al. Combining OpenFlow and sFlow for an effective and scalable anomaly detection and mitigation mechanism on SDN environments[J]. Computer Networks, 2014, 62: 122-136.</p><hr><p data-anchor-id="5bbh">这篇真的不咋滴 <br>
+本文提出模块化架构并结合sFlow从而达到与控制平面分离的数据收集过程，并对收集的数据进行检测分类，对攻击进行缓解。采用模块化设计，提高了可伸缩性，减少了S与C之间的通信。</p><div class="md-section-divider"></div><h1 data-anchor-id="qc07" id="architecture">Architecture</h1><ul data-anchor-id="4x54">
+<li>设计原则：模块化，数据收集，异常检测，缓解分离；包抽样，使用sFlow</li>
+<li>结构组件：本文基于OF1.0,其流定义元组见表1,本文基本架构如图1,由Collector,Anomaly Detection,Anomaly Mitigation组成。 <br>
+<a href="https://imgchr.com/i/EfJUHS" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EfJUHS.md.png" alt="EfJUHS.md.png" title=""></a> <br>
+<a href="https://imgchr.com/i/EfJwNQ" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EfJwNQ.md.png" alt="EfJwNQ.md.png" title=""></a> <br>
+<ol><li>Collector:收集流信息，并定期发送给异常检测模型，本文使用sFlow收集信息，与OF自带收集信息方式作对比。</li>
+<li>Anomaly Detection:每隔30s将统计信息发到本模块，本模块使用基于熵的算法进行检测（也可以实现其他算法）</li>
+<li>Anomaly Mitigation:缓解已识别的攻击，向流表中插入高优先级的项以阻断恶意流。</li></ol></li>
+</ul><div class="md-section-divider"></div><h2 data-anchor-id="3448" id="信息收集">信息收集</h2><ul data-anchor-id="4f0v">
+<li>OF自带的方法：Switch对flow-states request会响应对流的统计信息，但有诸多不足，如只能统计流表规则匹配项计数，只能统计项插入到目前为止的计数，频繁统计会影向switch的性能。</li>
+<li>sFlow方法：它以Controller应用实现，抽样包并统计，更高效，并节省资源。</li>
+</ul><div class="md-section-divider"></div><h2 data-anchor-id="kafb" id="基于熵的异常检测和分类">基于熵的异常检测和分类</h2><p data-anchor-id="khzm">计算熵时将其归一化，需要的特征有：sIP,dIP,sPORT,dPORT，支持检测的异常有：DDoS,Worm Propagation,Portscan。出现这些异常会导致熵特征改变，总结如表3. <br>
+<a href="https://imgchr.com/i/EftPzR" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EftPzR.md.png" alt="EftPzR.md.png" title=""></a> <br>
+图2中展示了监测10分钟后进行6分钟攻击，其熵变化图 <br>
+<a href="https://imgchr.com/i/EftwSs" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EftwSs.md.png" alt="EftwSs.md.png" title=""></a></p><div class="md-section-divider"></div><h2 data-anchor-id="3q5f" id="攻击分类与缓解">攻击分类与缓解</h2><p data-anchor-id="ly6u">检测的实现是依图3进行的，例如：dIP,dPORT熵降低而分类为DDoS攻击，其他同理。对DDoS攻击识别host和service,其他攻击识别attacker。识别攻击后将相应信息发给缓解模块，它将插入匹配dIP和PORT的流表项以丢弃相应的流。 <br>
+对有些良性流量也会导致攻击特征，本文通过手动添加白名单的方式进行避免。</p><div class="md-section-divider"></div><h1 data-anchor-id="cryg" id="评估">评估</h1><p data-anchor-id="xgzz">检测和缓解实现为NOX的应用。图3为实验设定，分别为使用OF方法和sFlow方法统计。对OF方法，S中流表项过期时间设为31秒。 <br>
+<a href="https://imgchr.com/i/EfddEV" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EfddEV.md.png" alt="EfddEV.md.png" title=""></a> <br>
+实验中使用的流为从NTUA中获取的，实验时在低，中，高速网络环境中分别测试。用到的工具为：Tcpreplay，将良性流量加载到网络环境中，使用Scapy产生恶意流量。环境改变的因素有：平均正常流率，抽样率，攻击率，可见表4. <br>
+<a href="https://imgchr.com/i/EfdXUf" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EfdXUf.png" alt="EfdXUf.png" title=""></a></p><ul data-anchor-id="92v7">
+<li>在50M中分别测试OF和sFlow主法</li>
+<li>在100M中sFlow以1/64抽样，在OVS中测试</li>
+<li>在500M中sFlow以1/256抽样，在OVS和NEC IP8800/S3640中测试。</li>
+<li><p>图4为50M结果，可见OF和sFlow方法相差无几。 <br>
+<a href="https://imgchr.com/i/EfwMrR" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EfwMrR.md.png" alt="EfwMrR.md.png" title=""></a> <br>
+图5为sFlow与OF的ROC比较 <br>
+<img src="https://s2.ax1x.com/2019/05/11/EfwYGD.png" alt="EfwYGD.png" title=""> <br>
+OF因为不用抽样所以校果略好，但sFlow节省大量CPU资源。</p></li>
+<li><p>对500M，100M的环境，OF方法就不适用，因在态耗CPU。图6a为sFlow方法良性包率为25000,恶意包率为L200,350,500结果准确率为100%,FP分别为：40%，42%，50%。 <br>
+<a href="https://imgchr.com/i/Ef0h1e" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/Ef0h1e.md.png" alt="Ef0h1e.md.png" title=""></a> <br>
+图6b为500M网，良性包为130000/s,恶意包为1000,2000,2，结果准确率为100%，FP分别为23%，27%，34%.在NEC IP8800/32640下实验结果差不多。</p></li>
+<li><p>图7a,b为OF和sFlow方法使用TRW-CB算法的结果，可见sFlow更好一些。 <br>
+<a href="https://imgchr.com/i/EfBWEq" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EfBWEq.md.png" alt="EfBWEq.md.png" title=""></a></p></li>
+<li>表5为性能比较，分别在OF和sFlow中用熵和TRW-CB方法分别比较CPU和流表项数，可见Sflow更优秀。 <br>
+<a href="https://imgchr.com/i/EfBTv4" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EfBTv4.md.png" alt="EfBTv4.md.png" title=""></a></li>
+<li><p>表6为单独sFlow和OF的CPU比较，由表5和表6可见sFlow对CPU更加友好。 <br>
+<img src="https://s2.ax1x.com/2019/05/11/EfDCKH.png" alt="EfDCKH.png" title=""></p></li>
+<li><p>图8a展示在有无缓解模块情况下攻击熵改变情况，图8b,c为worm和port scan情况。可见在有缓解机制时熵会很快恢复正常。 <br>
+<a href="https://imgchr.com/i/EfDBZR" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EfDBZR.md.png" alt="EfDBZR.md.png" title=""></a></p></li>
+<li>缓解模块插入规则如表7所示，对每个规则都庙宇一个过期时间。 <br>
+<a href="https://imgchr.com/i/EfDIot" target="_blank"><img src="https://s2.ax1x.com/2019/05/11/EfDIot.md.png" alt="EfDIot.md.png" title=""></a></li>
+</ul></div>
+</body>
+</html>

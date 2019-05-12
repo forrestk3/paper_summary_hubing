@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>DDoS Attack Protection in the Era of Cloud Computing and Software-Defined Networking</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="jtv7" id="ddos-attack-protection-in-the-era-of-cloud-computing-and-software-defined-networking">DDoS Attack Protection in the Era of Cloud Computing and Software-Defined Networking</h1><p data-anchor-id="oih7"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="koco" id="b-wang-y-zheng-w-lou-and-y-t-hou-ddos-attack-protection-in-the-era-of-cloud-computing-and-software-defined-networking-2014-ieee-22nd-international-conference-on-network-protocols-raleigh-nc-2014-pp-624-629">B. Wang, Y. Zheng, W. Lou and Y. T. Hou, "DDoS Attack Protection in the Era of Cloud Computing and Software-Defined Networking," 2014 IEEE 22nd International Conference on Network Protocols, Raleigh, NC, 2014, pp. 624-629.</h2><p data-anchor-id="jsn3">这篇不怎么样，CCF B类计算机网络会议。本文提出一个用于云防御DDoS攻击的框架。</p><div class="md-section-divider"></div><h1 data-anchor-id="q2vf" id="介绍">介绍：</h1><p data-anchor-id="kunc">混合云架构图如图1。 <br>
+<img src="https://s2.ax1x.com/2019/04/29/E1lyy6.png" alt="E1lyy6.png" title=""> <br>
+如图如示：攻击者会攻击1.local Server;2.cloud sever； <br>
+1.中的攻击方式有(1)和(2)两种防火墙防（2），对于（1）则取决于攻击者的流量是否重定向到防御系统。2.中攻击方式有（3）（4）（5）。由于云服务中快速的资源得分配使（4）（5）更难被防御。</p><div class="md-section-divider"></div><h1 data-anchor-id="micj" id="本文的方法damask">本文的方法：DaMask</h1><p data-anchor-id="m32b">设计目标：effective,small overhead,inexpensive.</p><ul data-anchor-id="wdtr">
+<li>effective:将企业流量切片处理</li>
+<li>overhead:通过高效的检测算法达到目的</li>
+<li><p>inexpensive:当虚拟机迁移时快速地配置参数文件 <br>
+DaMask的工作流如图2所示： <br>
+<a href="https://imgchr.com/i/E13fxI" target="_blank"><img src="https://s2.ax1x.com/2019/04/29/E13fxI.md.png" alt="E13fxI.md.png" title=""></a> <br>
+由图可见DaMask分为两部分：DaMask-D和DaMask-M。检测算法是在Da-D中运行。</p></li>
+<li><p>Da-D当收到包时交付给相应的NOS进行检测，如果是attack,发alert交给Da-M处理，如果是nomal交付，如果是unknow就进一步检测。</p></li>
+<li>Da-M：有两个功能：<em>countermeasure selection and log generation</em>.当收到alert后匹配相应的countermeasure，并提供API制定对策。缺省对策为drop。countermeasure会通过controller对switch下发流表。</li>
+</ul><div class="md-section-divider"></div><h1 data-anchor-id="9hnb" id="评估">评估</h1><ul data-anchor-id="pt2t">
+<li>实验配置基本信息： <br>
+私有云LinxuA：AMD E1-1200*2 1.4GHz CPU,4 G memoriy； <br>
+控制器LinuxB：Inter i7-2600 CPU 3.4GHz,12G memory,并运行MaMask。 <br>
+公有云：AWS的EC2.拓扑图见图3. <br>
+<img src="https://s2.ax1x.com/2019/04/29/E1YeLq.png" alt="E1YeLq.png" title=""></li>
+<li>通信代价测试：结果见表1；本模块几乎不影响通信时延。 <br>
+<img src="https://s2.ax1x.com/2019/04/29/E1YJyR.png" alt="E1YJyR.png" title=""></li>
+<li>对拓扑改变的适用性 <br>
+当网络拓扑改变时（如图3中增加了switchB），在FlowVisor里改相应公司的流头。经发ICMP包测试有效且不影响其他服务。</li>
+</ul></div>
+</body>
+</html>

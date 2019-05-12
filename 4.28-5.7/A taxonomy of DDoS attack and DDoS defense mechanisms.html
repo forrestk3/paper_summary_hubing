@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>A taxonomy of DDoS attack and DDoS defense mechanisms</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="nxi9" id="a-taxonomy-of-ddos-attack-and-ddos-defense-mechanisms">A taxonomy of DDoS attack and DDoS defense mechanisms</h1><p data-anchor-id="ofni"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="8jmd" id="mirkovic-j-reiher-p-a-taxonomy-of-ddos-attack-and-ddos-defense-mechanismsj-acm-sigcomm-computer-communication-review-2004-342-39-53">Mirkovic J, Reiher P. A taxonomy of DDoS attack and DDoS defense mechanisms[J]. ACM SIGCOMM Computer Communication Review, 2004, 34(2): 39-53.</h2><p data-anchor-id="tq5b">本文不错，就是老了点，对DDoS攻击和防御做了总结和分类，而不是提供个具体的方法。</p><p data-anchor-id="328s"><div class="toc">
+<ul>
+<li><a href="#a-taxonomy-of-ddos-attack-and-ddos-defense-mechanisms">A taxonomy of DDoS attack and DDoS defense mechanisms</a><ul>
+<li><a href="#mirkovic-j-reiher-p-a-taxonomy-of-ddos-attack-and-ddos-defense-mechanismsj-acm-sigcomm-computer-communication-review-2004-342-39-53">Mirkovic J, Reiher P. A taxonomy of DDoS attack and DDoS defense mechanisms[J]. ACM SIGCOMM Computer Communication Review, 2004, 34(2): 39-53.</a></li>
+</ul>
+</li>
+<li><a href="#ddos攻击总结">DDoS攻击总结</a><ul>
+<li><a href="#攻击overview">攻击overview</a><ul>
+<li><a href="#网络架构的缺点">网络架构的缺点：</a></li>
+<li><a href="#攻击策略">攻击策略</a></li>
+<li><a href="#ddos目的">DDoS目的</a></li>
+</ul>
+</li>
+<li><a href="#taxonomy-of-ddos-attack">Taxonomy of ddos attack</a><ul>
+<li><a href="#da自动化程度">DA:自动化程度</a><ul>
+<li><a href="#da-1手动">DA-1：手动</a></li>
+<li><a href="#da-2半自动">DA-2：半自动</a></li>
+<li><a href="#da-2cm交流机制">DA-2：CM：交流机制</a></li>
+<li><a href="#da-2cm-1直接">DA-2：CM-1：直接</a></li>
+<li><a href="#da-2cm-2间接">DA-2：CM-2：间接</a></li>
+<li><a href="#da-3自动">DA-3：自动</a></li>
+<li><a href="#da-2-da-3ss扫描策略">DA-2 DA-3：SS：扫描策略</a><ul>
+<li><a href="#da-2-da-3ss-1随机扫描">DA-2 DA-3：SS-1：随机扫描</a></li>
+<li><a href="#da-2-da-3ss-2命中表检测">DA-2 DA-3：SS-2：命中表检测</a></li>
+<li><a href="#da-2-da-3ss-3路标检测">DA-2 DA-3：SS-3：路标检测</a></li>
+<li><a href="#da-2-da-3ss-4置换扫描">DA-2 DA-3：SS-4：置换扫描</a></li>
+<li><a href="#da-2-da-3ss5本地子网扫描">DA-2 DA-3：SS5：本地子网扫描</a></li>
+</ul>
+</li>
+<li><a href="#da-2-da-3pm传播机制">DA-2 DA-3：PM：传播机制</a><ul>
+<li><a href="#da-2-da-3pm-1中心源传播">DA-2 DA-3：PM-1：中心源传播</a></li>
+<li><a href="#da-2-da-3pm-2连式传播">DA-2 DA-3：PM-2：连式传播</a></li>
+<li><a href="#da-2-da-3pm-3自治传播">DA-2 DA-3：PM-3：自治传播</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#ev探索可攻击的弱点">EV：探索可攻击的弱点</a><ul>
+<li><a href="#ev-1语义法">EV-1：语义法</a></li>
+<li><a href="#ev-2brute-force">EV-2：Brute-Force</a></li>
+</ul>
+</li>
+<li><a href="#sav源地址验证">SAV：源地址验证</a><ul>
+<li><a href="#sav-1源地址欺骗">SAV-1:源地址欺骗</a></li>
+<li><a href="#sav-1ar地址是否可路由">SAV-1：AR：地址是否可路由</a><ul>
+<li><a href="#sav-1ar-1可路由">SAV-1：AR-1：可路由</a></li>
+<li><a href="#sav-1ar-2不可路由">SAV-1:AR-2:不可路由</a></li>
+</ul>
+</li>
+<li><a href="#sav-1st欺骗策略">SAV-1：ST：欺骗策略</a><ul>
+<li><a href="#sav-1st-1随机源地址">SAV-1:ST-1:随机源地址</a></li>
+<li><a href="#sav-1st-2子网欺骗地址">SAV-1：ST-2：子网欺骗地址</a></li>
+<li><a href="#sav-1st-3使用agent出口路由地址">SAV-1：ST-3：使用agent出口路由地址</a></li>
+</ul>
+</li>
+<li><a href="#sav-2验证源地址">SAV-2：验证源地址</a></li>
+</ul>
+</li>
+<li><a href="#ard攻击频率">ARD：攻击频率</a><ul>
+<li><a href="#ard-1持续攻击">ARD-1：持续攻击</a></li>
+<li><a href="#ard-2变频攻击">ARD-2：变频攻击</a></li>
+<li><a href="#ard-2rcm变频机制">ARD-2：RCM：变频机制</a><ul>
+<li><a href="#ard-2rcm-1逐增">ARD-2:RCM-1：逐增</a></li>
+<li><a href="#ard-2rcm-2跳频">ARD-2：RCM-2：跳频</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#pc是否定制">PC：是否定制</a><ul>
+<li><a href="#pc-1characterizable">PC-1：Characterizable</a></li>
+<li><a href="#pc-1ravs基于attack和victim服务的关系">PC-1：RAVS：基于attack和victim服务的关系</a><ul>
+<li><a href="#pc-1ravs-1可过滤">PC-1：RAVS-1：可过滤</a></li>
+<li><a href="#pc-2ravs-2non-filterable">PC-2：RAVS-2：Non-Filterable</a></li>
+</ul>
+</li>
+<li><a href="#pc-2non-characterizable">PC-2：Non-characterizable</a></li>
+</ul>
+</li>
+<li><a href="#pasagent的持续性">PAS：Agent的持续性</a><ul>
+<li><a href="#pas-1constant-agent-set">PAS-1：Constant Agent Set</a></li>
+<li><a href="#pas-2variable-agent-set">PAS-2：Variable Agent Set</a></li>
+</ul>
+</li>
+<li><a href="#vtvictim类别">VT:victim类别</a><ul>
+<li><a href="#vt-1应用">VT-1:应用</a></li>
+<li><a href="#vt-2主机">VT-2：主机</a></li>
+<li><a href="#vt-3-网络">VT-3 网络</a></li>
+<li><a href="#vt-4-基础设施">VT-4 基础设施</a></li>
+</ul>
+</li>
+<li><a href="#iv对victim的影响">IV：对victim的影响</a><ul>
+<li><a href="#iv-1disruptive">IV-1:Disruptive</a></li>
+<li><a href="#iv-1pdr被攻击后是否可恢复">IV-1：PDR:被攻击后是否可恢复</a><ul>
+<li><a href="#iv-1pdr-1可恢复">IV-1:PDR-1:可恢复</a></li>
+<li><a href="#iv-1pdr-2不可恢复">IV-1:PDR-2:不可恢复</a></li>
+</ul>
+</li>
+<li><a href="#iv-2degrading">IV-2：degrading</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#ddos防御总结">DDoS防御总结</a><ul>
+<li><a href="#防御challenge">防御challenge</a></li>
+<li><a href="#taxonomy-of-ddos-defenses">Taxonomy of DDoS Defenses</a><ul>
+<li><a href="#al防御机制活跃等级">AL：防御机制活跃等级</a><ul>
+<li><a href="#al-1阻止">AL-1：阻止</a></li>
+<li><a href="#al-1pg阻止目标">AL-1:PG：阻止目标</a><ul>
+<li><a href="#al-1pg-1attack-prevention">AL-1:PG-1:attack prevention</a></li>
+<li><a href="#al-1pg-1st保护目标">AL-1：PG-1：ST：保护目标</a><ul>
+<li><a href="#al-1pg-1st-1系统安全">AL-1：PG-1：ST-1：系统安全</a></li>
+<li><a href="#al-1pg-1st-2协议安全">AL-1：PG-1：ST-2：协议安全</a></li>
+</ul>
+</li>
+<li><a href="#al-1pg-2dos-prevertion">AL-1：PG-2：Dos Prevertion</a></li>
+<li><a href="#al-1pg-2pm防御手段">AL-1:PG-2:PM:防御手段</a><ul>
+<li><a href="#al-1pg-2pm-1资源审计">AL-1:PG-2:PM-1:资源审计</a></li>
+<li><a href="#al-1pg-2pm-1资源增加">AL-1：PG-2：PM-1：资源增加</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#al-2被动响应">AL-2：被动响应</a></li>
+<li><a href="#al-2ads攻击检测策略">AL-2：ADS：攻击检测策略</a><ul>
+<li><a href="#al-2ads-1模式匹配">AL-2:ADS-1:模式匹配</a></li>
+<li><a href="#al-2ads-2异常检测">AL-2：ADS-2：异常检测</a></li>
+<li><a href="#al-2ads-2nbsnormal-behavior-specification">AL-2：ADS-2:NBS：normal behavior specification</a><ul>
+<li><a href="#al-2ads-2nbs-1standard">AL-2:ADS-2:NBS-1:standard</a></li>
+<li><a href="#al-2ads-2nbs-1trained">AL-2：ADS-2：NBS-1：trained</a></li>
+</ul>
+</li>
+<li><a href="#al-2ads-3第三方检测">AL-2：ADS-3：第三方检测</a></li>
+</ul>
+</li>
+<li><a href="#al-2ars攻击响应策略">AL-2：ARS：攻击响应策略</a><ul>
+<li><a href="#al-2ars-1agent识别">AL-2:ARS-1:Agent识别</a></li>
+<li><a href="#al-2ars-2rate限制">AL-2：ARS-2：rate限制</a></li>
+<li><a href="#al-2ars-3过滤">AL-2：ARS-3：过滤</a></li>
+<li><a href="#al-2ars-4重配置">AL-2：ARS-4:重配置</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#cd协作程度">CD：协作程度</a><ul>
+<li><a href="#cd-1autonomous">CD-1:Autonomous</a></li>
+<li><a href="#cd-2cooperative">CD-2：Cooperative</a></li>
+<li><a href="#cd-3interdependent">CD-3:Interdependent</a></li>
+</ul>
+</li>
+<li><a href="#dl布署位置">DL：布署位置</a><ul>
+<li><a href="#dl-1victim-network">DL-1:Victim Network</a></li>
+<li><a href="#dl-2intermediate-network">DL-2：Intermediate network</a></li>
+<li><a href="#dl-3source-network">DL-3：Source network</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#总结">总结</a></li>
+</ul>
+</div>
+</p><div class="md-section-divider"></div><h1 data-anchor-id="hzqa" id="ddos攻击总结">DDoS攻击总结</h1><div class="md-section-divider"></div><h2 data-anchor-id="olgi" id="攻击overview">攻击overview</h2><div class="md-section-divider"></div><h3 data-anchor-id="ffi0" id="网络架构的缺点">网络架构的缺点：</h3><ol data-anchor-id="3gav">
+<li>网络安全性高度独立</li>
+<li>网络资源有限</li>
+<li>攻击者协调工作</li>
+<li>实体与网络带宽不一致，使攻击者有大量的资源可使用。</li>
+<li>没有强制审计</li>
+<li>网络是分布式</li>
+<li>分布式管理，每个网络在本地管理下运行。</li>
+</ol><div class="md-section-divider"></div><h3 data-anchor-id="o28q" id="攻击策略">攻击策略</h3><p data-anchor-id="6oxc">找slave,slave再找slave,进行spoof攻击。</p><div class="md-section-divider"></div><h3 data-anchor-id="jam3" id="ddos目的">DDoS目的</h3><p data-anchor-id="vo9x">威望，钱，斗争，仇。</p><div class="md-section-divider"></div><h2 data-anchor-id="av9f" id="taxonomy-of-ddos-attack">Taxonomy of ddos attack</h2><p data-anchor-id="6j0v">贴上攻击分类图： <br>
+<a href="https://imgchr.com/i/EJ7Zk9" target="_blank"><img src="https://s2.ax1x.com/2019/05/01/EJ7Zk9.md.png" alt="EJ7Zk9.md.png" title=""></a></p><div class="md-section-divider"></div><h3 data-anchor-id="f35r" id="da自动化程度">DA:自动化程度</h3><p data-anchor-id="0xue">分为手动，自动，半自动。</p><div class="md-section-divider"></div><h4 data-anchor-id="ks30" id="da-1手动">DA-1：手动</h4><p data-anchor-id="ycqs">攻击手动扫描主机，黑它，插入恶意代码，启动，现在基本没有了。</p><div class="md-section-divider"></div><h4 data-anchor-id="cu2o" id="da-2半自动">DA-2：半自动</h4><p data-anchor-id="lll3">使用handler控制agent来进行攻击。</p><div class="md-section-divider"></div><h4 data-anchor-id="m7ny" id="da-2cm交流机制">DA-2：CM：交流机制</h4><p data-anchor-id="ft3m">handler与agent交流手段分：直接，间接。</p><div class="md-section-divider"></div><h4 data-anchor-id="9lww" id="da-2cm-1直接">DA-2：CM-1：直接</h4><p data-anchor-id="edtw">需要将handler的IP写死在攻击代码中，因此一个agent被发现可能导致整个攻击的失败</p><div class="md-section-divider"></div><h4 data-anchor-id="jakb" id="da-2cm-2间接">DA-2：CM-2：间接</h4><p data-anchor-id="e675">间接通信，handler与agent通过IRC[19]进行交流，DDoS更稳定，攻击代码可更新，还可以定期更换IRC使其更难被发现。</p><div class="md-section-divider"></div><h4 data-anchor-id="jkli" id="da-3自动">DA-3：自动</h4><p data-anchor-id="trnt">全自动化，handler与agent之间不需要通信，攻击属性写死在攻击代码里。handler要做的就是启动攻击脚本。缺点：攻击系统不够灵活。</p><div class="md-section-divider"></div><h4 data-anchor-id="a1f9" id="da-2-da-3ss扫描策略">DA-2 DA-3：SS：扫描策略</h4><p data-anchor-id="5jkb">一般使用worm自动感染主机，扫描方式分很多种，下面介绍</p><div class="md-section-divider"></div><h5 data-anchor-id="l1fb" id="da-2-da-3ss-1随机扫描">DA-2 DA-3：SS-1：随机扫描</h5><p data-anchor-id="m0ty">被感染的主机使用种子随机扫描IP。这会导致大量流量，触发攻击检测系统。</p><div class="md-section-divider"></div><h5 data-anchor-id="ik4u" id="da-2-da-3ss-2命中表检测">DA-2 DA-3：SS-2：命中表检测</h5><p data-anchor-id="ud40">每感染一个就给被感染者发送一部分感染列表。优：快速，无碰撞；劣：列表可能太长，传输流量大；列表需要事先收集。</p><div class="md-section-divider"></div><h5 data-anchor-id="qcoz" id="da-2-da-3ss-3路标检测">DA-2 DA-3：SS-3：路标检测</h5><p data-anchor-id="6tb5">使用被感染的主机信息对新的主机进行扫描；优：流量小；缺：慢。</p><div class="md-section-divider"></div><h5 data-anchor-id="slbu" id="da-2-da-3ss-4置换扫描">DA-2 DA-3：SS-4：置换扫描</h5><p data-anchor-id="vz77">所有被感染者有共同的IP表，IP对应下标。agent从随机下标开始，遇到被感染的再从随机下标开始。速度一般，有可能导致攻击检测。</p><div class="md-section-divider"></div><h5 data-anchor-id="wrw3" id="da-2-da-3ss5本地子网扫描">DA-2 DA-3：SS5：本地子网扫描</h5><p data-anchor-id="xpkd">该方法可附加到前面各扫描方法中，可以防炎墙内找弱机。</p><div class="md-section-divider"></div><h4 data-anchor-id="wh12" id="da-2-da-3pm传播机制">DA-2 DA-3：PM：传播机制</h4><p data-anchor-id="1l93">基于感染阶段的传播机制可分为：central source propagation,back-chaining propagation,autonomous propogation.</p><div class="md-section-divider"></div><h5 data-anchor-id="2bnz" id="da-2-da-3pm-1中心源传播">DA-2 DA-3：PM-1：中心源传播</h5><p data-anchor-id="65bg">感染机器从中心服务器下载代码。缺：会有单点失败问题。</p><div class="md-section-divider"></div><h5 data-anchor-id="ng3c" id="da-2-da-3pm-2连式传播">DA-2 DA-3：PM-2：连式传播</h5><p data-anchor-id="zb2x">当前感染的机器将代码传给下一个。优：稳定。</p><div class="md-section-divider"></div><h5 data-anchor-id="expx" id="da-2-da-3pm-3自治传播">DA-2 DA-3：PM-3：自治传播</h5><p data-anchor-id="efck">在探索阶段注入攻击指令。优：流量小。</p><div class="md-section-divider"></div><h3 data-anchor-id="0tc5" id="ev探索可攻击的弱点">EV：探索可攻击的弱点</h3><div class="md-section-divider"></div><h4 data-anchor-id="4ctp" id="ev-1语义法">EV-1：语义法</h4><p data-anchor-id="si6x">利用弱机已安装的协议或应用的缺点，如：TCP SYN，CGI请求攻击，NAPTHA 攻击。</p><div class="md-section-divider"></div><h4 data-anchor-id="t7vu" id="ev-2brute-force">EV-2：Brute-Force</h4><p data-anchor-id="kkpe">发送超过弱机处理能力的大量流量。</p><div class="md-section-divider"></div><h3 data-anchor-id="45se" id="sav源地址验证">SAV：源地址验证</h3><p data-anchor-id="qabe">安源地址验证类型的攻击可分：spoofed source address,valid source address</p><div class="md-section-divider"></div><h4 data-anchor-id="xpqo" id="sav-1源地址欺骗">SAV-1:源地址欺骗</h4><p data-anchor-id="e940">这个方法很流行</p><div class="md-section-divider"></div><h4 data-anchor-id="ndlf" id="sav-1ar地址是否可路由">SAV-1：AR：地址是否可路由</h4><p data-anchor-id="r46e">这个可以再分：routable source sdress,non-routable source address</p><div class="md-section-divider"></div><h5 data-anchor-id="lpwb" id="sav-1ar-1可路由">SAV-1：AR-1：可路由</h5><p data-anchor-id="9yz5">反射攻击，如：Smurf attack</p><div class="md-section-divider"></div><h5 data-anchor-id="ch6d" id="sav-1ar-2不可路由">SAV-1:AR-2:不可路由</h5><p data-anchor-id="tl85">一般使用网络空间中被分配却未被使用的地址</p><div class="md-section-divider"></div><h4 data-anchor-id="oe6v" id="sav-1st欺骗策略">SAV-1：ST：欺骗策略</h4><p data-anchor-id="2t7e">按选欺骗地址的技术可分：random,subnet,enroute</p><div class="md-section-divider"></div><h5 data-anchor-id="wrba" id="sav-1st-1随机源地址">SAV-1:ST-1:随机源地址</h5><p data-anchor-id="dfy5">使用随机生成的地址。缺：容易被入口过滤器丢弃。</p><div class="md-section-divider"></div><h5 data-anchor-id="fsgd" id="sav-1st-2子网欺骗地址">SAV-1：ST-2：子网欺骗地址</h5><p data-anchor-id="b5qv">使用agent的子网地址</p><div class="md-section-divider"></div><h5 data-anchor-id="k12u" id="sav-1st-3使用agent出口路由地址">SAV-1：ST-3：使用agent出口路由地址</h5><div class="md-section-divider"></div><h4 data-anchor-id="7ypu" id="sav-2验证源地址">SAV-2：验证源地址</h4><p data-anchor-id="p9o4">有的攻击需要请求/响应，所以需要用真实的地址。</p><div class="md-section-divider"></div><h3 data-anchor-id="tqs7" id="ard攻击频率">ARD：攻击频率</h3><p data-anchor-id="q6ue">可以分为：constant rate,variable rate</p><div class="md-section-divider"></div><h4 data-anchor-id="kgxr" id="ard-1持续攻击">ARD-1：持续攻击</h4><p data-anchor-id="3pja">agent以固定频率发包，通常是最大。缺：触发攻击检测</p><div class="md-section-divider"></div><h4 data-anchor-id="ghbc" id="ard-2变频攻击">ARD-2：变频攻击</h4><p data-anchor-id="drxh">通过改变攻击频率的方式避免触发攻击检测</p><div class="md-section-divider"></div><h4 data-anchor-id="ly8q" id="ard-2rcm变频机制">ARD-2：RCM：变频机制</h4><p data-anchor-id="88dt">可分为：increasing rate,fluctuating rate</p><div class="md-section-divider"></div><h5 data-anchor-id="ig27" id="ard-2rcm-1逐增">ARD-2:RCM-1：逐增</h5><p data-anchor-id="ikt3">慢慢提高，逐渐增加耗victim的资源。可以延迟被检测</p><div class="md-section-divider"></div><h5 data-anchor-id="lujg" id="ard-2rcm-2跳频">ARD-2：RCM-2：跳频</h5><p data-anchor-id="htzl">跳动攻击，可多组协作，保持有一组活跃攻击。优：难以被发现。</p><div class="md-section-divider"></div><h3 data-anchor-id="mi6m" id="pc是否定制">PC：是否定制</h3><p data-anchor-id="3jyw">根据是否定制包头包内容可分：characterizable and non-characterizable attacks.</p><div class="md-section-divider"></div><h4 data-anchor-id="nwft" id="pc-1characterizable">PC-1：Characterizable</h4><p data-anchor-id="2hmw">定制攻击一般用于特定主机或协议</p><div class="md-section-divider"></div><h4 data-anchor-id="pny2" id="pc-1ravs基于attack和victim服务的关系">PC-1：RAVS：基于attack和victim服务的关系</h4><p data-anchor-id="gst3">可分：filterable and non-filterable</p><div class="md-section-divider"></div><h5 data-anchor-id="dh9z" id="pc-1ravs-1可过滤">PC-1：RAVS-1：可过滤</h5><p data-anchor-id="xuwv">发畸形包给victim的非标准服务，如UDP flood,ICMP ECHO flood。缺：可由防火墙拦截。</p><div class="md-section-divider"></div><h5 data-anchor-id="hh69" id="pc-2ravs-2non-filterable">PC-2：RAVS-2：Non-Filterable</h5><p data-anchor-id="xdr3">向victim请求合法服务的攻击，如：HTTP request flood,DNS request flood。优：难解决。</p><div class="md-section-divider"></div><h4 data-anchor-id="t3q6" id="pc-2non-characterizable">PC-2：Non-characterizable</h4><p data-anchor-id="z1b4">使用随机生成的包。缺：攻击效果不行。</p><div class="md-section-divider"></div><h3 data-anchor-id="47uk" id="pasagent的持续性">PAS：Agent的持续性</h3><p data-anchor-id="ox03">一直活跃会被检测，按Agent的持续性分：constant agent set,attack with variable agent set.</p><div class="md-section-divider"></div><h4 data-anchor-id="dpqd" id="pas-1constant-agent-set">PAS-1：Constant Agent Set</h4><p data-anchor-id="eo7u">所有Agent收到的指令一致，一起开一起关。</p><div class="md-section-divider"></div><h4 data-anchor-id="vk3b" id="pas-2variable-agent-set">PAS-2：Variable Agent Set</h4><p data-anchor-id="caib">Agent分组，组内同步，如ARD-2 RCM-2</p><div class="md-section-divider"></div><h3 data-anchor-id="rw5v" id="vtvictim类别">VT:victim类别</h3><p data-anchor-id="9u9k">可分为：application,host,network,infrastructure</p><div class="md-section-divider"></div><h4 data-anchor-id="dr66" id="vt-1应用">VT-1:应用</h4><p data-anchor-id="vdtp">攻击机器上的某个应用，耗尽其资源使合法用户无法使用。优：难检测</p><div class="md-section-divider"></div><h4 data-anchor-id="2oc8" id="vt-2主机">VT-2：主机</h4><p data-anchor-id="7ai7">针对主机，耗尽资源使其不可用。如：TCP SYN。一般通过防火墙防御。</p><div class="md-section-divider"></div><h4 data-anchor-id="1lcb" id="vt-3-网络">VT-3 网络</h4><p data-anchor-id="8d70">耗网络带宽。用防火墙容易防御。</p><div class="md-section-divider"></div><h4 data-anchor-id="owd1" id="vt-4-基础设施">VT-4 基础设施</h4><p data-anchor-id="8o5m">攻击一些服务，如：DNS，ROUTER等。</p><div class="md-section-divider"></div><h3 data-anchor-id="nwz0" id="iv对victim的影响">IV：对victim的影响</h3><p data-anchor-id="dynz">可分为：disruptive,degrading</p><div class="md-section-divider"></div><h4 data-anchor-id="in5t" id="iv-1disruptive">IV-1:Disruptive</h4><p data-anchor-id="0jdk">使服务不可用</p><div class="md-section-divider"></div><h4 data-anchor-id="o1of" id="iv-1pdr被攻击后是否可恢复">IV-1：PDR:被攻击后是否可恢复</h4><p data-anchor-id="pmlh">可分为：revoverable,non-recoverable</p><div class="md-section-divider"></div><h5 data-anchor-id="jp37" id="iv-1pdr-1可恢复">IV-1:PDR-1:可恢复</h5><p data-anchor-id="h1jo">当攻击停止，victim就恢复，如UDP flooding</p><div class="md-section-divider"></div><h5 data-anchor-id="dmmj" id="iv-1pdr-2不可恢复">IV-1:PDR-2:不可恢复</h5><p data-anchor-id="l1z1">攻击停止victim无法恢复如使其死机等</p><div class="md-section-divider"></div><h4 data-anchor-id="dl13" id="iv-2degrading">IV-2：degrading</h4><p data-anchor-id="7259">攻击只降低服务质量。这种攻击难以检测，威害巨大。</p><div class="md-section-divider"></div><h1 data-anchor-id="hbqz" id="ddos防御总结">DDoS防御总结</h1><div class="md-section-divider"></div><h2 data-anchor-id="zpf7" id="防御challenge">防御challenge</h2><ol data-anchor-id="dkow">
+<li>布署</li>
+<li>成效不好</li>
+<li>攻击意图了解少</li>
+<li>没有防御标准</li>
+<li>无法进行大范围测试</li>
+</ol><div class="md-section-divider"></div><h2 data-anchor-id="2bau" id="taxonomy-of-ddos-defenses">Taxonomy of DDoS Defenses</h2><p data-anchor-id="00lf">贴上防御分类图 <br>
+<a href="https://imgchr.com/i/EJ79S0" target="_blank"><img src="https://s2.ax1x.com/2019/05/01/EJ79S0.md.png" alt="EJ79S0.md.png" title=""></a></p><div class="md-section-divider"></div><h3 data-anchor-id="ijzu" id="al防御机制活跃等级">AL：防御机制活跃等级</h3><p data-anchor-id="ig85">可分为：preventive,reactive</p><div class="md-section-divider"></div><h4 data-anchor-id="t6z6" id="al-1阻止">AL-1：阻止</h4><p data-anchor-id="g5ne">通过避免攻击发生，保护主机不受攻击</p><div class="md-section-divider"></div><h4 data-anchor-id="ozsv" id="al-1pg阻止目标">AL-1:PG：阻止目标</h4><p data-anchor-id="yxwo">可分为：attack prevention,denial of service prevention</p><div class="md-section-divider"></div><h5 data-anchor-id="oc60" id="al-1pg-1attack-prevention">AL-1:PG-1:attack prevention</h5><p data-anchor-id="mddy">修改系统和协议以避免攻击发生。</p><div class="md-section-divider"></div><h5 data-anchor-id="xlbo" id="al-1pg-1st保护目标">AL-1：PG-1：ST：保护目标</h5><p data-anchor-id="3nu6">根据保护目标可再分为：system security,protocol security</p><div class="md-section-divider"></div><h6 data-anchor-id="5oew" id="al-1pg-1st-1系统安全">AL-1：PG-1：ST-1：系统安全</h6><p data-anchor-id="068e">保护主机和router使他们成为强机。</p><div class="md-section-divider"></div><h6 data-anchor-id="ytmb" id="al-1pg-1st-2协议安全">AL-1：PG-1：ST-2：协议安全</h6><p data-anchor-id="uygs">完善协议，不好的协议使Server易受攻击，如TCP-SYN</p><div class="md-section-divider"></div><h5 data-anchor-id="phkw" id="al-1pg-2dos-prevertion">AL-1：PG-2：Dos Prevertion</h5><div class="md-section-divider"></div><h5 data-anchor-id="3xl3" id="al-1pg-2pm防御手段">AL-1:PG-2:PM:防御手段</h5><p data-anchor-id="u9ra">可分为：resource accounting,resource multiplication</p><div class="md-section-divider"></div><h6 data-anchor-id="z2jr" id="al-1pg-2pm-1资源审计">AL-1:PG-2:PM-1:资源审计</h6><p data-anchor-id="zaaz">user需要验证才会被分配资源。</p><div class="md-section-divider"></div><h6 data-anchor-id="u52i" id="al-1pg-2pm-1资源增加">AL-1：PG-2：PM-1：资源增加</h6><p data-anchor-id="7jsn">用大量资源进行负载均衡，让attack耗不完。</p><div class="md-section-divider"></div><h4 data-anchor-id="8rwf" id="al-2被动响应">AL-2：被动响应</h4><p data-anchor-id="we3g">致力于攻击发生时减小攻击的影响</p><div class="md-section-divider"></div><h4 data-anchor-id="w0ha" id="al-2ads攻击检测策略">AL-2：ADS：攻击检测策略</h4><p data-anchor-id="vp15">可分为：pattern detection,anomaly dettection,third-party detection</p><div class="md-section-divider"></div><h5 data-anchor-id="uj89" id="al-2ads-1模式匹配">AL-2:ADS-1:模式匹配</h5><p data-anchor-id="47fe">将模式存于数据库，对新包匹配。缺：新的攻击不会检测到。优：FP低。</p><div class="md-section-divider"></div><h5 data-anchor-id="d8qk" id="al-2ads-2异常检测">AL-2：ADS-2：异常检测</h5><p data-anchor-id="erk9">定期与正常系统行为模型比较来发现异常。</p><div class="md-section-divider"></div><h5 data-anchor-id="8mcz" id="al-2ads-2nbsnormal-behavior-specification">AL-2：ADS-2:NBS：normal behavior specification</h5><p data-anchor-id="n0yj">可分为：standard,trained</p><div class="md-section-divider"></div><h6 data-anchor-id="fsi4" id="al-2ads-2nbs-1standard">AL-2:ADS-2:NBS-1:standard</h6><p data-anchor-id="sw16">依靠协议标准特征进行检测，没有FP，但复杂攻击可以伪装成标准特征。</p><div class="md-section-divider"></div><h6 data-anchor-id="eg2z" id="al-2ads-2nbs-1trained">AL-2：ADS-2：NBS-1：trained</h6><p data-anchor-id="7iux">训练正常特征生成阈值来区分。缺：阈值不好定；模型更新可能会误训练。</p><div class="md-section-divider"></div><h5 data-anchor-id="u6ng" id="al-2ads-3第三方检测">AL-2：ADS-3：第三方检测</h5><p data-anchor-id="x61j">不自已检测。</p><div class="md-section-divider"></div><h4 data-anchor-id="rbhq" id="al-2ars攻击响应策略">AL-2：ARS：攻击响应策略</h4><p data-anchor-id="d0j2">可分为：agent identification,rate-limiting,filtering,reconfiguration</p><div class="md-section-divider"></div><h5 data-anchor-id="klra" id="al-2ars-1agent识别">AL-2:ARS-1:Agent识别</h5><p data-anchor-id="ql1j">使victim可以识别出Agent，结合其他策略降低攻击影响。</p><div class="md-section-divider"></div><h5 data-anchor-id="bf50" id="al-2ars-2rate限制">AL-2：ARS-2：rate限制</h5><p data-anchor-id="lpqz">给恶意流限速，通常用于FP高的情况</p><div class="md-section-divider"></div><h5 data-anchor-id="0smh" id="al-2ars-3过滤">AL-2：ARS-3：过滤</h5><p data-anchor-id="88l6">将恶意流完全过滤。缺：攻击者可以利用它误判性来达到dos目的。</p><div class="md-section-divider"></div><h5 data-anchor-id="a5jt" id="al-2ars-4重配置">AL-2：ARS-4:重配置</h5><p data-anchor-id="6pee">重配置TOPO，境加资源或隔离attacker.</p><div class="md-section-divider"></div><h3 data-anchor-id="akrw" id="cd协作程度">CD：协作程度</h3><p data-anchor-id="oq4h">可分为：autonomous,cooperative,interdependent</p><div class="md-section-divider"></div><h4 data-anchor-id="rsx8" id="cd-1autonomous">CD-1:Autonomous</h4><p data-anchor-id="cys8">防御机制与其他实体不合作。</p><div class="md-section-divider"></div><h4 data-anchor-id="59w9" id="cd-2cooperative">CD-2：Cooperative</h4><p data-anchor-id="ajbu">防御机制与其他实体协作，如：将防御决策发给router</p><div class="md-section-divider"></div><h4 data-anchor-id="nczk" id="cd-3interdependent">CD-3:Interdependent</h4><p data-anchor-id="aq37">防御机制需要依靠其他实体进行攻击阻止，攻击检测，高效响应。</p><div class="md-section-divider"></div><h3 data-anchor-id="cb91" id="dl布署位置">DL：布署位置</h3><p data-anchor-id="9vze">可分为：victim,intermediate,source network</p><div class="md-section-divider"></div><h4 data-anchor-id="0vdv" id="dl-1victim-network">DL-1:Victim Network</h4><p data-anchor-id="t41h">在victim网络布署来保护这个网络</p><div class="md-section-divider"></div><h4 data-anchor-id="95k0" id="dl-2intermediate-network">DL-2：Intermediate network</h4><p data-anchor-id="qgbg">以中件设备形式存在，保护大量主机，victim可以向其请求保护服务。</p><div class="md-section-divider"></div><h4 data-anchor-id="c59q" id="dl-3source-network">DL-3：Source network</h4><p data-anchor-id="sbe1">在源头阻止攻击的产生。缺：谁来付错布署这个？</p><div class="md-section-divider"></div><h1 data-anchor-id="b232" id="总结">总结</h1><p data-anchor-id="zsjr">本文是一篇不错的总结，被引用了1943次，许多参文献中都出更本文，有的文章里推荐阅读本文。本文的参考文献中有很多关于攻击的网站和资料。</p></div>
+</body>
+</html>

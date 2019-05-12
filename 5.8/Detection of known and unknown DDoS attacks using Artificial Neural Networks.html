@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Detection of known and unknown DDoS attacks using Artificial Neural Networks</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="qaw1" id="detection-of-known-and-unknown-ddos-attacks-using-artificial-neural-networks">Detection of known and unknown DDoS attacks using Artificial Neural Networks</h1><p data-anchor-id="l33f"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="qw65" id="saied-a-overill-r-e-radzik-t-detection-of-known-and-unknown-ddos-attacks-using-artificial-neural-networksj-neurocomputing-2016-172-385-393">Saied A, Overill R E, Radzik T. Detection of known and unknown DDoS attacks using Artificial Neural Networks[J]. Neurocomputing, 2016, 172: 385-393.</h2><p data-anchor-id="hb1r">本篇提出使用ANN将流量分类，以达到实时缓解DDoS攻击的目的。感觉一般。</p><div class="md-section-divider"></div><h1 data-anchor-id="n1bj" id="理论框架和架构设计">理论框架和架构设计</h1><p data-anchor-id="8y2b">本文检测机制：有监督的ANN，训练特征有：source address,id and sequence number coupled with source destrination port numbers(我没看懂，所以原文抄过来了)。训练使用离线的方式，使用三层拓扑ANN，节点数与检测协议相关，只检测：TCP，ICMP，UDP，对每种协议检测的ANN结构如图1,图2,图3所示。 <br>
+<a href="https://imgchr.com/i/EW9InU" target="_blank"><img src="https://s2.ax1x.com/2019/05/10/EW9InU.md.png" alt="EW9InU.md.png" title=""></a> <br>
+<a href="https://imgchr.com/i/EW9qhR" target="_blank"><img src="https://s2.ax1x.com/2019/05/10/EW9qhR.md.png" alt="EW9qhR.md.png" title=""></a> <br>
+<a href="https://imgchr.com/i/EWCSBD" target="_blank"><img src="https://s2.ax1x.com/2019/05/10/EWCSBD.md.png" alt="EWCSBD.md.png" title=""></a> <br>
+输出只有一个节点：1为攻击，0为正常，ANN中使用反向传播算法和sigmoid函数。 <br>
+使用数据训练后的模型便用于检测。当检测为恶意流，模型分布式布署，模块间可通信。 <br>
+具体过程：</p><ul data-anchor-id="y3ys">
+<li>为协议设定阈值，当其协议的包数超过该值时进行检测。</li>
+<li>分布式布署每个检测器，每个检测器都登记其他检测器.</li>
+<li><p>当包数超过阈值时便开始检测。检测三次，最终是否为恶意对三次结果综合来看，判断方式如下： <br>
+<a href="https://imgchr.com/i/EWPRyV" target="_blank"><img src="https://s2.ax1x.com/2019/05/10/EWPRyV.md.png" alt="EWPRyV.md.png" title=""></a> <br>
+<a href="https://imgchr.com/i/EWP5o4" target="_blank"><img src="https://s2.ax1x.com/2019/05/10/EWP5o4.md.png" alt="EWP5o4.md.png" title=""></a></p></li>
+<li><p>检测到恶意后将协议类型和目的IP发给其他检测器和security office，以采取相应措施。</p></li>
+<li>当本检测器无法判断结果时交给其他检测器检测，并对本检测器利用新数据训练。</li>
+<li>当有检测器失效时可使其他检测器接替，这使检测系统具有可伸缩性。</li>
+</ul><div class="md-section-divider"></div><h3 data-anchor-id="tu03" id="实验与评估">实验与评估</h3><p data-anchor-id="hfdt">本文以插件的形式实现，并整合到Snort-AI中。检测器代码组织方式如图5 <br>
+<a href="https://imgchr.com/i/EWi8mT" target="_blank"><img src="https://s2.ax1x.com/2019/05/10/EWi8mT.md.png" alt="EWi8mT.md.png" title=""></a> <br>
+结果比较见表2 <br>
+<img src="https://s2.ax1x.com/2019/05/10/EWiJ7F.png" alt="EWiJ7F.png" title=""></p><p data-anchor-id="yk0y">这篇真的一般。。。。</p></div>
+</body>
+</html>
