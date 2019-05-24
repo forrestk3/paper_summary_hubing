@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Openflowsia: An optimized protection scheme for software-defined networks from flooding attacks</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="uuv6" id="openflowsia-an-optimized-protection-scheme-for-software-defined-networks-from-flooding-attacks">Openflowsia: An optimized protection scheme for software-defined networks from flooding attacks</h1><p data-anchor-id="fvrs"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="ma6e" id="phan-t-v-van-toan-t-van-tuyen-d-et-al-openflowsia-an-optimized-protection-scheme-for-software-defined-networks-from-flooding-attacksc2016-ieee-sixth-international-conference-on-communications-and-electronics-icce-ieee-2016-13-18">Phan T V, Van Toan T, Van Tuyen D, et al. Openflowsia: An optimized protection scheme for software-defined networks from flooding attacks[C]//2016 IEEE Sixth International Conference on Communications and Electronics (ICCE). IEEE, 2016: 13-18.</h2><p data-anchor-id="s8nn">本文感觉一般。 <br>
+提出OpenflowSIA scheme</p><div class="md-section-divider"></div><h1 data-anchor-id="gdce" id="openflowsia-scheme">OpenflowSIA scheme</h1><p data-anchor-id="2v2d">架构图见图1 <br>
+<a href="https://imgchr.com/i/VS9l0P" target="_blank"><img src="https://s2.ax1x.com/2019/05/21/VS9l0P.md.png" alt="VS9l0P.md.png"></a></p><ul data-anchor-id="0mdr">
+<li>flow Controller:定期（时间默认设为3秒）从S统计信息</li>
+<li>Feature Extractor:从统计的信息中抽取流的packet number和duration信息</li>
+<li>SVM-i Module：不同的协议发给不同的分类器</li>
+<li>Policy Enforcement Module:对不同的攻击执行不同的策略，流少，但流量大：drop;流多，但包少：delete.执行算法如algorithm1 <br>
+<img src="https://s2.ax1x.com/2019/05/21/VSCM34.png" alt="VSCM34.png"></li>
+<li>流表有效时间调整：流项时间先设为一个inVal（小于OF的默认值），然后送给SVM进行检测，如果是恶意流，则对action进行drop或delete；如果是良性流，若有效时间为inVal，则将该时间设为inVal+statVal(检测时间间隔)，否则若大于maxVal(OF默认时间)则不作调整，小于maxVal则调为maxVal。</li>
+</ul><div class="md-section-divider"></div><h1 data-anchor-id="sm1a" id="实验">实验</h1><p data-anchor-id="yg0h">控制器：POX； <br>
+数据集：CAIDA <br>
+攻击工具：BoNesi <br>
+数据集和训练集见表2表3. <br>
+<img src="https://s2.ax1x.com/2019/05/21/VSFIrd.png" alt="VSFIrd.png"></p><p data-anchor-id="c1bw">不同配置下当有攻击时流表中的项数统计结果如图5： <br>
+<img src="https://s2.ax1x.com/2019/05/21/VSkkGT.png" alt="VSkkGT.png"> <br>
+控制器CPU使用率和OVS的CPU使用率见图6图7. <br>
+<img src="https://s2.ax1x.com/2019/05/21/VSkli6.png" alt="VSkli6.png"> <br>
+<img src="https://s2.ax1x.com/2019/05/21/VSk8zD.png" alt="VSk8zD.png"> <br>
+这篇真的一般。</p></div>
+</body>
+</html>

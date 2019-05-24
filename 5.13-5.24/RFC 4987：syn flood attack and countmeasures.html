@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>RFC 4987：syn flood attack and countmeasures</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="arh4" id="rfc-4987syn-flood-attack-and-countmeasures">RFC 4987：syn flood attack and countmeasures</h1><p data-anchor-id="q2yc"><code>security</code></p><hr><div class="md-section-divider"></div><h1 data-anchor-id="dt76" id="攻击">攻击</h1><p data-anchor-id="lpg2">服务器收到SYN：状态变为SYN-RECEIVED,分配TCP并利用SYN头部初始化，TCB的数量通常有限(backlog控制) <br>
+到达上限：1.拒绝攻击；2.替换旧的</p><div class="md-section-divider"></div><h2 data-anchor-id="y4pw" id="攻击方式">攻击方式</h2><p data-anchor-id="yo8y">attacker发一堆(a barrage of)SYN填满backlog,让新的SYN无法接收。</p><div class="md-section-divider"></div><h2 data-anchor-id="xdcf" id="攻击参数">攻击参数</h2><ul data-anchor-id="wmrf">
+<li>barrage大小：不能大于backlog，又不能太小，依主机而定</li>
+<li>barrage frequency:根据victim的TCP回收时间定制，太大会引起注意，太小不管用。</li>
+<li>IP selection:正常主机收到SYN-ACK会发RST，单用一个主机会被过滤，因此用可用，但未分配的IP，也可用bot，阻止他们响应SYN-ACK。</li>
+</ul><p data-anchor-id="b4dj">该攻击影响的是新的连接，不影响已有连接和outgoing。</p><div class="md-section-divider"></div><h2 data-anchor-id="fd6i" id="countmeasrue">countmeasrue</h2><ul data-anchor-id="sblg">
+<li>filtering:对包进行filter不准网络内发spoofed ip packet,无法大范围布署。</li>
+<li>increasing backlog：不行，降低效率，要重新设计数据结构与搜索算法。</li>
+<li>减小SYN-RECEIVED时间：降低效率。</li>
+<li><p>替换旧的TCP：攻击太强时失效。</p></li>
+<li><p><strong>SYN cache:主机将SYN缓存，收到SYN-ACK的确认后再创建TCB；无攻击时会延长15%的时间，FreeBSD中有源码实现</strong></p></li>
+<li><p><strong>SYN cookies:利用时间，MSS，对源目的信息编码哈希函数进行构造序列号，当收到ACK时可以解码序列号检查是否合理，即使没有TCB如果合理也可现构造一个TCB，在攻击者看来好像是backlog变大了。缺点：会使TCP option不可用。</strong></p></li>
+<li><p>Hybrid:结合SYN cache和SYN cookies</p></li>
+<li>Firewall and proxies:中间设备握手，如果成功再传给Server。</li>
+</ul></div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>The Crossfire Attack</title>
+</head>
+<body>
+<div style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><div id="MathJax_SVG_Hidden"></div><svg><defs id="MathJax_SVG_glyphs"><path id="MJMAIN-3E" stroke-width="1" d="M84 520Q84 528 88 533T96 539L99 540Q106 540 253 471T544 334L687 265Q694 260 694 250T687 235Q685 233 395 96L107 -40H101Q83 -38 83 -20Q83 -19 83 -17Q82 -10 98 -1Q117 9 248 71Q326 108 378 132L626 250L378 368Q90 504 86 509Q84 513 84 520Z"></path><path id="MJMATHI-3B2" stroke-width="1" d="M29 -194Q23 -188 23 -186Q23 -183 102 134T186 465Q208 533 243 584T309 658Q365 705 429 705H431Q493 705 533 667T573 570Q573 465 469 396L482 383Q533 332 533 252Q533 139 448 65T257 -10Q227 -10 203 -2T165 17T143 40T131 59T126 65L62 -188Q60 -194 42 -194H29ZM353 431Q392 431 427 419L432 422Q436 426 439 429T449 439T461 453T472 471T484 495T493 524T501 560Q503 569 503 593Q503 611 502 616Q487 667 426 667Q384 667 347 643T286 582T247 514T224 455Q219 439 186 308T152 168Q151 163 151 147Q151 99 173 68Q204 26 260 26Q302 26 349 51T425 137Q441 171 449 214T457 279Q457 337 422 372Q380 358 347 358H337Q258 358 258 389Q258 396 261 403Q275 431 353 431Z"></path></defs></svg></div><div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="ttkl" id="the-crossfire-attack">The Crossfire Attack</h1><p data-anchor-id="6p1l"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="hpkc" id="kang-m-s-lee-s-b-gligor-v-d-the-crossfire-attackc2013-ieee-symposium-on-security-and-privacy-ieee-2013-127-141">Kang M S, Lee S B, Gligor V D. The crossfire attack[C]//2013 IEEE Symposium on Security and Privacy. IEEE, 2013: 127-141.</h2><p data-anchor-id="yi0s">本文介绍一种攻击方法Crossfire Attack及其影响分析.botnet难以检测，因为：IP有效，流量有效，流量密度低。botnet在一条链路上产生大量合法低速流量称为：Crossfire attack。</p><div class="md-section-divider"></div><h1 data-anchor-id="dpsu" id="the-crossfire-attack-1">The Crossfire Attack</h1><p data-anchor-id="e8e2">目标：阻止合法流进入某些特定区域。 <br>
+术语：</p><ul data-anchor-id="v9g7">
+<li>Target Area:要攻击的区域，如机机构，城市。</li>
+<li>Target Link:要flood的链接。 <br>
+如图1所示，在攻击区域内选一些public servers以构建攻击拓扑，围绕着攻击区域选一些decoy servers构建攻击流。 <br>
+<img src="https://s2.ax1x.com/2019/05/09/EcgyBn.png" alt="EcgyBn.png" title=""></li>
+</ul><p data-anchor-id="1fnk">攻击过程为：构建链路图：从bot到public server的链路，找持续链路；再从持续链路中找目标链路（流密度大的）；最后利用诱饵服务器洪泛这些目标链路。整个过程可见图2. <br>
+<img src="https://s2.ax1x.com/2019/05/09/Ec2Xaq.png" alt="Ec2Xaq.png" title=""></p><div class="md-section-divider"></div><h2 data-anchor-id="an0m" id="link-map-construction">Link Map Construction</h2><div class="md-section-divider"></div><h3 data-anchor-id="d1vl" id="traceroute-from-bots-to-servers">Traceroute from bots to servers</h3><p data-anchor-id="qhsx">用traceroute找所有到public serve的路由，并由此找到所有通向public server的链路。</p><div class="md-section-divider"></div><h3 data-anchor-id="gaks" id="link-persistense">link-persistense</h3><p data-anchor-id="acr6">一些链路并不稳定，因为load balance。移除不稳定的链路，如图2A②。</p><div class="md-section-divider"></div><h2 data-anchor-id="0zlp" id="attack-setup">attack setup</h2><p data-anchor-id="0ep9">找到占流量绝大多数的link。</p><div class="md-section-divider"></div><h3 data-anchor-id="zexc" id="flow-density-computation">flow-density computation</h3><p data-anchor-id="1222">链路的流密度指该link上可建立的流数，高密度的link可用于攻击。</p><div class="md-section-divider"></div><h3 data-anchor-id="43ff" id="target-link-selection">target-link selection</h3><ul data-anchor-id="5xgy">
+<li>降级率：目标域内被flood的router占总router的比例。 <br>
+如何根据密度选链路是generalized maximum coverage problem，是一个NP-hard问题。本文利用启发式贪心算法解决。</li>
+</ul><div class="md-section-divider"></div><h2 data-anchor-id="vnqu" id="bot-coordination">Bot Coordination</h2><p data-anchor-id="owx6">找到target link后协调bot:每个bot分配 1):诱饵服务器列表；2）：向诱饵服务器的发送率。 <br>
+2）需要两个子步：</p><div class="md-section-divider"></div><h3 data-anchor-id="sjxm" id="attack-flow-assignment">Attack-flow Assignment</h3><p data-anchor-id="w8ap">bot发送给decoy的流量尽量低，以免被检测。用于洪泛的流均匀地分给多个bot和decoy.攻击者首先设定link的最大带宽，再为每个link分配置流。<span class="MathJax_Preview"></span><span class="MathJax_SVG" id="MathJax-Element-1-Frame" role="textbox" aria-readonly="true" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 -1063.3248744694856 6920.733977365282 1626.6497489389712" style="width: 16.111ex; height: 3.778ex; vertical-align: -1.444ex; margin: 1px 0px;"><g stroke="black" fill="black" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(47.839333333333336) matrix(1 0 0 -1 0 0)">平</text><g transform="translate(765,0)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(47.839333333333336) matrix(1 0 0 -1 0 0)">均</text></g><g transform="translate(1530,0)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(47.839333333333336) matrix(1 0 0 -1 0 0)">流</text></g><g transform="translate(2296,0)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(47.839333333333336) matrix(1 0 0 -1 0 0)">率</text></g><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#MJMAIN-3E" x="3339" y="0"></use><g transform="translate(4515,0)"><rect stroke="none" width="2284" height="60" x="0" y="220"></rect><g transform="translate(330,535)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(33.827517007443646) matrix(1 0 0 -1 0 0)">总</text><g transform="translate(541,0)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(33.827517007443646) matrix(1 0 0 -1 0 0)">带</text></g><g transform="translate(1082,0)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(33.827517007443646) matrix(1 0 0 -1 0 0)">宽</text></g></g><g transform="translate(60,-408)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(33.827517007443646) matrix(1 0 0 -1 0 0)">攻</text><g transform="translate(541,0)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(33.827517007443646) matrix(1 0 0 -1 0 0)">击</text></g><g transform="translate(1082,0)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(33.827517007443646) matrix(1 0 0 -1 0 0)">流</text></g><g transform="translate(1623,0)"><text font-family="STIXGeneral,'Arial Unicode MS',serif" font-style="" font-weight="" stroke="none" transform="scale(33.827517007443646) matrix(1 0 0 -1 0 0)">数</text></g></g></g></g></svg></span><script type="math/tex" id="MathJax-Element-1">平均流率 \gt \frac{总带宽}{攻击流数}</script>.另外，流率应考虑decoy处理时不会角发流量警报。当分配新的流时必须考虑之前的流率，以确保bot和decoy不会角发警报。</p><div class="md-section-divider"></div><h3 data-anchor-id="plci" id="target-link-flooding">target-link flooding</h3><p data-anchor-id="lwwv">bot发送攻击流量时逐渐提高，另外还可根据目标link调整。</p><div class="md-section-divider"></div><h2 data-anchor-id="r7h6" id="rolling-attack">Rolling attack</h2><p data-anchor-id="byqz">轮询攻击，目标link集轮流发送攻击流量，bot也可以轮流发送以除低检测。</p><div class="md-section-divider"></div><h1 data-anchor-id="mouz" id="technical-underpinnings">Technical underpinnings</h1><p data-anchor-id="lgfj">本节讨论当前网络可以被攻击的两个特征。</p><ul data-anchor-id="hrrd">
+<li><p>Characteristics of Flow-Density Distribution <br>
+流密度分布特征分析两部分：1.对给定目标区域容易找到高密度流link。2.link的流密度不是常量，与选定area有关。</p>
+
+<ol><li><p>Universal power-law property of flow-density distribution <br>
+流密度服从幂率分布，意味着攻击者轻松找到高密度link。图3为两个目标area的流率分布统计，结果符合假设。 <br>
+<a href="https://imgchr.com/i/Echx0J" target="_blank"><img src="https://s2.ax1x.com/2019/05/09/Echx0J.md.png" alt="Echx0J.md.png" title=""></a></p></li>
+<li><p>link的流密度依赖于具体的area.可见表1,为East Coast,Massachuetts,Univ2。 <br>
+<a href="https://imgchr.com/i/Ec5E80" target="_blank"><img src="https://s2.ax1x.com/2019/05/09/Ec5E80.md.png" alt="Ec5E80.md.png" title=""></a></p></li></ol></li>
+<li><p>Geographical Distribution of Bots <br>
+目标link与bot独立，如：依几何位置将bot分8组，再从中选择几个组成6个不同分布，如表2.对每分布进行三次攻击，并分析降级率，如图4所示，所有的s1~s8攻击结果作为基准再用6个分布分别攻击结果与之经较。由图可见：攻击效果与bot独立。 <br>
+<a href="https://imgchr.com/i/EcIW6K" target="_blank"><img src="https://s2.ax1x.com/2019/05/09/EcIW6K.md.png" alt="EcIW6K.md.png" title=""></a> <br>
+<a href="https://imgchr.com/i/EcI4mD" target="_blank"><img src="https://s2.ax1x.com/2019/05/09/EcI4mD.md.png" alt="EcI4mD.md.png" title=""></a></p></li>
+</ul><div class="md-section-divider"></div><h1 data-anchor-id="mywm" id="attack-persistence-and-cost">Attack persistence and cost</h1><p data-anchor-id="8prx">攻击可行性和代价分析</p><ul data-anchor-id="ejbi">
+<li><p>Data-plane-only attack:indefinite duration <br>
+当攻击者在少于3分钟一次目标link时网络不会发生路由变化，下面说明当前网络对本攻击的响应速度。</p>
+
+<ol><li>link failure detection:路由器检测link是否连通，OSPF要40秒，BGP要180秒（理论上，实际更长。）当攻击间隔少于3分钟时，便很难被检测。</li>
+<li>Traffic engineering:对于流量工程（网络自动优化各种参数）调节周期很长，所以只要重新加载一下crossfire attack 即可。</li></ol></li>
+<li><p>Proactive Attack Techniques:the Rolling Attack <br>
+轮询攻击有两种方式：改变bot和decoy;改变target link. <br>
+第一种优：benign和malicious难以区分；缺：要更多的bot和decoy.第二种：多个link集轮流攻击分降低效果。如表3.当然这可以优化：使优集更频繁地攻击。 <br>
+<a href="https://imgchr.com/i/Ec7USI" target="_blank"><img src="https://s2.ax1x.com/2019/05/09/Ec7USI.md.png" alt="Ec7USI.md.png" title=""></a></p></li>
+<li><p>Avodiance of Early Congestion <br>
+避免早期阻塞，以使更多的流量到达目标area，bot可用traceroute回答率来检测阻塞，当有，就重新分配攻击流。</p></li>
+<li><p>Execution timie of Target Selection Algorithm <br>
+目标link选择算法：每次选择最高flow density的link加入target link set，将相关路由器去除再重计算 flow density，如此直到选择了足够多的target link为止。 <br>
+<a href="https://imgchr.com/i/EcbEG9" target="_blank"><img src="https://s2.ax1x.com/2019/05/09/EcbEG9.md.png" alt="EcbEG9.md.png" title=""></a> <br>
+执行时间如表4.可见不是十分耗时。 <br>
+<a href="https://imgchr.com/i/EcbtMt" target="_blank"><img src="https://s2.ax1x.com/2019/05/09/EcbtMt.md.png" alt="EcbtMt.md.png" title=""></a></p></li>
+<li><p>The Cost of the Crossfire Attack <br>
+bot可以买到，各地区价格不一样，不是太贵<img src="https://s2.ax1x.com/2019/05/09/EcbOeK.png" alt="EcbOeK.png" title="">。</p></li>
+</ul><div class="md-section-divider"></div><h1 data-anchor-id="6erz" id="experiment-setup-and-result">Experiment setup and result</h1><p data-anchor-id="eq94">本节展示攻击的可行性以及影响</p><ul data-anchor-id="uc55">
+<li><p>bots：本文使用planelab bot 和LG server作为bots,分布可见图5 <br>
+<img src="https://s2.ax1x.com/2019/05/09/EcqalR.png" alt="EcqalR.png" title=""></p></li>
+<li><p>Decoy Servers:找目标area创刊近公共机构的werver作decoy，使用bots独立扫描以避免触发IDS。</p></li>
+<li><p>Target area：选小，中，大三类area进行测试，T5为具体信息。 <br>
+<img src="https://s2.ax1x.com/2019/05/09/EcqI78.png" alt="EcqI78.png" title=""></p></li>
+<li><p>results</p>
+
+<ol><li><p>link map:利用已有的bot发traceroute构建link map,6次都一样则作为persistent link. <br>
+表6总结了persistent的比例 <br>
+<img src="https://s2.ax1x.com/2019/05/09/EcLpAU.png" alt="EcLpAU.png" title=""></p></li>
+<li><p>link coverage:图6展示bot子集占比攻击效果与总bot攻击效果比较，结果表明找到了足够的critical link覆盖目标area。 <br>
+<a href="https://imgchr.com/i/EcLF39" target="_blank"><img src="https://s2.ax1x.com/2019/05/09/EcLF39.md.png" alt="EcLF39.md.png" title=""></a></p></li>
+<li><p>flow density:计算link的流密度（符合幂率分布），找target link（多于3跳）。</p></li>
+<li><p>degreation ratio:如图7所示，可见area越小所需要的目标link越少。 <br>
+<a href="https://imgchr.com/i/EcLJDP" target="_blank"><img src="https://s2.ax1x.com/2019/05/09/EcLJDP.md.png" alt="EcLJDP.md.png" title=""></a></p></li>
+<li><p>attack bots and flows：4kbps 流率可通过发送HTTP get 每秒一次获得。图8为bot cluster size <span class="MathJax_Preview"></span><span class="MathJax_SVG" id="MathJax-Element-2-Frame" role="textbox" aria-readonly="true" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 -726.9033013280564 573.5 942.8066026561128" style="width: 1.333ex; height: 2.222ex; vertical-align: -0.556ex; margin: 1px 0px;"><g stroke="black" fill="black" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#MJMATHI-3B2"></use></g></svg></span><script type="math/tex" id="MathJax-Element-2">\beta</script>和发送率关系，目标link数为10. <br>
+<img src="https://s2.ax1x.com/2019/05/09/EcLfC4.png" alt="EcLfC4.png" title=""></p></li></ol></li>
+</ul><p data-anchor-id="8chd">本文相比于DDOS所具有的特征有：undetectability at the target area;indistinguishability of flows in routers,persistence,flexbility</p><p data-anchor-id="jif0">本文列出攻击有关的参孝文献：[5,53,7,1,2,29,58] <br>
+本文中bot来自：[42,43,45] <br>
+本文中提出可以买bot的文献：[41] <br>
+关于P，NP，NPC，NPH问题的解释 <br>
+<img src="https://s2.ax1x.com/2019/05/09/Eg8EHs.png" alt="Eg8EHs.png" title=""></p></div>
+</body>
+</html>

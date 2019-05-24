@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>OPERETTA: An OPEnflow-based REmedy to mitigate TCP SYNFLOOD Attacks against web servers</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="bhtc" id="operetta-an-openflow-based-remedy-to-mitigate-tcp-synflood-attacks-against-web-servers">OPERETTA: An OPEnflow-based REmedy to mitigate TCP SYNFLOOD Attacks against web servers</h1><p data-anchor-id="q30v"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="e53h" id="fichera-s-galluccio-l-grancagnolo-s-c-et-al-operetta-an-openflow-based-remedy-to-mitigate-tcp-synflood-attacks-against-web-serversj-computer-networks-2015-92-89-100">Fichera S, Galluccio L, Grancagnolo S C, et al. OPERETTA: An OPEnflow-based REmedy to mitigate TCP SYNFLOOD Attacks against web servers[J]. Computer Networks, 2015, 92: 89-100.</h2><p data-anchor-id="k6a8">本文提出一种机制，利用运行在控制器上的应用OPERETTA管理TCP SYN，以达到拒绝假连接的效果。</p><div class="md-section-divider"></div><h1 data-anchor-id="k7pb" id="operetta">OPERETTA</h1><p data-anchor-id="9yl8">流程可见图3 <br>
+<img src="https://s2.ax1x.com/2019/05/19/EXI1US.png" alt="EXI1US.png" title=""> <br>
+流程解释：所有的SYN都会被发给控制器，控制器统计每个HOC，如果超过K个就将该HOC源认定为不可信，将该源的MAC加入black list；当控制器收到HOC的ACK时，1：发RST给该HOC的客户端；2：插rule到switch。 <br>
+合法用户到恶意用户信息交互图如图4,图5. <br>
+<img src="https://s2.ax1x.com/2019/05/19/EXILrt.png" alt="EXILrt.png" title=""></p><div class="md-section-divider"></div><h1 data-anchor-id="gb0n" id="实验">实验</h1><p data-anchor-id="cu7t">使用POX，本文功能实现在_handle_PacketIn_function上，并添加生成SYN/ACK和RST包的特征。创建Firewall管理white,black list,counter；非法流量使用scapy，合法使用iperf，服务器使用SimpeHTTPServer模拟。lswitch使用mininet，硬件：I3-2365M CPU,1.4GHZ,4G RAM,Kubuntu(使用KDE界面的ubuntu) 13.10,64bit. <br>
+2个合法host,100非法host。 <br>
+拓扑信息：</p><ul data-anchor-id="zfcl">
+<li>senario1:50个攻击者，假SYN包：50~250</li>
+<li>senario2:100个攻击包，攻击者1-100</li>
+<li>拓扑1：集中式，如图6</li>
+<li>拓扑2：分布式，如图7 <br>
+<img src="https://s2.ax1x.com/2019/05/19/EvSFR1.png" alt="EvSFR1.png"> <br>
+实验部分展示延迟，CPU消耗，内存消耗，攻击者和攻击包数变化对应用的影响。</li>
+<li>模拟结果与无攻击状态作对比，对senario1和senario2结果分别见图8,图9 <br>
+<a href="https://imgchr.com/i/EvpIhj" target="_blank"><img src="https://s2.ax1x.com/2019/05/19/EvpIhj.md.png" alt="EvpIhj.md.png"></a></li>
+<li>CPU，内存消耗情况见图10~13 <br>
+<img src="https://s2.ax1x.com/2019/05/19/EvpXHU.png" alt="EvpXHU.png" title=""> <br>
+<img src="https://s2.ax1x.com/2019/05/19/EvpxN4.png" alt="EvpxN4.png" title=""></li>
+<li>overhead <br>
+图14为控制器处理的SYN包数统计对比。 <br>
+图15为集中，分布式阻塞攻击所需要的时间对比，图16为攻击者增加时阻塞攻击者所需要时对比。 <br>
+<a href="https://imgchr.com/i/Ev9AHO" target="_blank"><img src="https://s2.ax1x.com/2019/05/19/Ev9AHO.md.png" alt="Ev9AHO.md.png" title=""></a> <br>
+图17表示本文机制会导致延迟。</li>
+</ul></div>
+</body>
+</html>
