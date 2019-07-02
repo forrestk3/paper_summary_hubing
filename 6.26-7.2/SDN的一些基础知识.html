@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SDN的一些基础知识</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="foio" id="sdn的一些基础知识">SDN的一些基础知识</h1><p data-anchor-id="8yyy"><code>sdn</code></p><hr><div class="md-section-divider"></div><h1 data-anchor-id="zzxi" id="openflow简介">OpenFlow简介</h1><p data-anchor-id="cssx">参考自：<a href="https://www.sdnlab.com/sdn-guide/14736.html" target="_blank">这里</a></p><div class="md-section-divider"></div><h2 data-anchor-id="i4sz" id="基本知识学网络的过以跳过">基本知识（学网络的过以跳过）</h2><ul data-anchor-id="s06p">
+<li>Ingress port：packets从device的哪个接口进入。</li>
+<li>Egress port：packets从device的哪个接口转发出去。</li>
+<li>Vlan：将局域网逻辑上分成不同的虚拟网络，网络之间相互隔离。详见 虚拟局域网。</li>
+<li>Switch：根据destination MAC/vlan id转发packets的设备。一般会在网络中学习MAC地址和port的对应关系，构建一个二层转发表（forwarding database, or FDB）。</li>
+<li>Router：根据destination IP address转发packets的设备。一般会通过路由协议来学习网络中IP地址和port [2]的对应关系，构建一个三层转发表（routing table/forwarding information table, or RIB/FIB）。</li>
+<li>Firewall：根据5 tuple（src IP/src port/dst IP/dst port/protocol）及ingress port转发packets的设备。一般会通过配置静态策略（policy）来决定packets如何转发。在TCP/UDP连接建立时会创建session，构建一个四层转发表（session table）来使能双向数据的转发。</li>
+<li>unicast, broadcast, multicast这些概念就不多说，翻翻教科书就知道了。</li>
+<li>packets处理方法：</li>
+<li>转发（可以是unicast, broadcast, multicast），总之把包转到egress port。</li>
+</ul><div class="md-section-divider"></div><h2 data-anchor-id="5swg" id="openflow">OpenFlow</h2><div class="md-section-divider"></div><h2 data-anchor-id="tm5d" id="flow-table">Flow table</h2><p data-anchor-id="nn79"><img src="https://img1.sdnlab.com/wp-content/uploads/2015/12/OpenFlow%E7%AE%80%E4%BB%8B%20%E5%9B%BE3.jpg" alt="盗的图"> <br>
+openflow关心从L1-L4的所有packet header，定义了能够match L1-L4 的flow entry。</p><p data-anchor-id="9nlh"><img src="https://img1.sdnlab.com/wp-content/uploads/2015/12/OpenFlow%E7%AE%80%E4%BB%8B%20%E5%9B%BE4.jpg" alt=""></p><p data-anchor-id="ml14">当有packet到达时，OF的match和处理方式过程图如下： <br>
+<img src="https://img1.sdnlab.com/wp-content/uploads/2015/12/OpenFlow%E7%AE%80%E4%BB%8B%20%E5%9B%BE5.jpg" alt=""></p><p data-anchor-id="7qqv">OF也允许多级流表的方式，图示如下 <br>
+<img src="https://img1.sdnlab.com/wp-content/uploads/2015/12/OpenFlow%E7%AE%80%E4%BB%8B%20%E5%9B%BE6.jpg" alt=""></p><div class="md-section-divider"></div><h2 data-anchor-id="wus7" id="instruction">instruction</h2><p data-anchor-id="gevs">当packet match到一个flow entry后，要执行对应的instructions，openflow定义了如下instruction:</p><ul data-anchor-id="eqow">
+<li>Apply-Actions: 对packet立即执行某些action。</li>
+<li>Clear-Actions: 将packet上的action set清空。</li>
+<li>Write-Actions: 修改/添加packet上的action set。</li>
+<li>Write-Metadata: 修改flow entry的metadata。</li>
+<li>Goto-Table: 将packet转到另外一张flow table。</li>
+</ul><div class="md-section-divider"></div><h3 data-anchor-id="1vsz" id="action-set">Action set</h3><p data-anchor-id="qk1x">每个packet都有一个action set，初始时为空，当match flow entry时被修改。如果所有instruction都执行完，且没有后续的Goto-Table instruction时，packet上的action set被执行（这里也有个疑问，set一般是无序的，但action的执行必定有序，执行的先后对结果影响很大，我们姑且认为是顺序执行吧）。所以上述的instruction大部分实在操作packet上的action set，即定义我们如何进一步处理这个packet。</p><div class="md-section-divider"></div><h4 data-anchor-id="tnkm" id="举个例子">举个例子</h4><p data-anchor-id="kflp">我们举一个简单的例子，你在公司访问google.com（假定IP是203.208.46.200）。你的局域网IP是10.0.0.222，ISP分配给你公司的公网IP是22.22.22.22。对于这样一个很常见的网络访问，openflow需要应用如下actions：</p><ul data-anchor-id="dffh">
+<li>pop VLAN tag (if any)</li>
+<li>decrement TTL</li>
+<li>modify src IP from 10.0.0.222 to 22.22.22.22</li>
+<li>modify src port from X to Y</li>
+<li>output</li>
+</ul><div class="md-section-divider"></div><h2 data-anchor-id="0p2o" id="of-table-installation">OF table installation</h2><p data-anchor-id="mcac">下发流表的示意图如下 <br>
+<img src="https://img1.sdnlab.com/wp-content/uploads/2015/12/OpenFlow%E7%AE%80%E4%BB%8B%20%E5%9B%BE7.jpg" alt=""></p><ul data-anchor-id="52cj">
+<li>客户端发出一个packet，到达oSwitch。</li>
+<li>oSwitch match flow table失败，packet enqueue，同时发送flow entry inquiry给controller。</li>
+<li>Controller获取相关的路由信息。</li>
+<li>Controller发送flow entry到各个相关的oSwitch。</li>
+<li>packet被依次forward到下一个oSwitch，直至到达destination。</li>
+</ul><p data-anchor-id="ktce">其实也可以采取主动模式，Controller收集到拓扑信息后主动向各个oSwitch发送计算好的flow entries。</p><div class="md-section-divider"></div><h4 data-anchor-id="5ox9" id="更具体的细节可见">更具体的细节可见：</h4><p data-anchor-id="czz4">[1] open flow spec: <a href="http://www.openflow.org/documents/openflow-spec-v1.1.0.pdf" target="_blank">http://www.openflow.org/documents/openflow-spec-v1.1.0.pdf</a></p><p data-anchor-id="zqxu">[2] open flow white paper: <a href="http://www.openflow.org/documents/openflow-wp-latest.pdf" target="_blank">http://www.openflow.org/documents/openflow-wp-latest.pdf</a></p></div>
+</body>
+</html>

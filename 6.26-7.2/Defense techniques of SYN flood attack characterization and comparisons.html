@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Defense techniques of SYN flood attack characterization and comparisons</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="nfsr" id="defense-techniques-of-syn-flood-attack-characterization-and-comparisons">Defense techniques of SYN flood attack characterization and comparisons</h1><p data-anchor-id="a0dr"><code>security</code></p><div class="md-section-divider"></div><h2 data-anchor-id="0vrp" id="ghanti-s-naik-g-m-defense-techniques-of-syn-flood-attack-characterization-and-comparisonsj-2018">Ghanti S, Naik G M. Defense techniques of SYN flood attack characterization and comparisons[J]. 2018.</h2><p data-anchor-id="jbpy">本文致力于比较各种SYN flood的防御机制，相当于一篇小综述。</p><div class="md-section-divider"></div><h1 data-anchor-id="dz1q" id="列举了一下所有的syn攻击的防御文献">列举了一下所有的SYN攻击的防御文献</h1><p data-anchor-id="1w2y"><a href="https://imgchr.com/i/ZmEQyR" target="_blank"><img src="https://s2.ax1x.com/2019/06/26/ZmEQyR.md.png" alt="ZmEQyR.md.png" title=""></a></p><div class="md-section-divider"></div><h2 data-anchor-id="948s" id="防御系统的性能指标-response-time">防御系统的性能指标* Response time</h2><ul data-anchor-id="sp60">
+<li>response time</li>
+<li>Connections and half-open connections</li>
+<li>Processor utilization</li>
+<li>Network bandwidth</li>
+</ul><div class="md-section-divider"></div><h2 data-anchor-id="sxjq" id="指标的测试场景">指标的测试场景</h2><ul data-anchor-id="d83a">
+<li>无攻击无保护</li>
+<li>有攻击无保护</li>
+<li>有攻击有保护</li>
+</ul><div class="md-section-divider"></div><h1 data-anchor-id="jreg" id="比较vssf防御基于硬件实现和软件实现性能">比较VSSF防御基于硬件实现和软件实现性能</h1><p data-anchor-id="kfe8">对于一个防御方法基于纯软件的PC和基于FPGA的NIOS实现的性能比较</p><div class="md-section-divider"></div><h2 data-anchor-id="56uq" id="vssf">VSSF</h2><p data-anchor-id="topx">图1为VSSF保护系统的说明图 <br>
+<img src="https://s2.ax1x.com/2019/06/26/ZmEHtU.png" alt="ZmEHtU.png" title=""> <br>
+该方法使用注册的方式维护已授权的IP，对于一个请求，若IP没有被注册，则先发SYN/ACK，若客户端回ACK，则注册IP并允许它与服务器建立连接，否则将该IP阻塞。若请求IP已注册，则直接交付。由此，对于未注册的欺骗IP包便可被VSSF直接过滤掉。 <br>
+对已注册的欺骗请求，对未确认的SYN计数，若计数到达某个阈值则说明有攻击，阻塞该IP并清空注册表。</p><div class="md-section-divider"></div><h2 data-anchor-id="5mw7" id="software-based-vssf-protection-system">software-based vssf protection system</h2><p data-anchor-id="mq4h">基于软件的VSSF需要一台有两个网卡的主机，将该主机放在server和client之间，主机使用libipq包实现该算法。实现拓扑图如图2. <br>
+<a href="https://imgchr.com/i/ZmVRUK" target="_blank"><img src="https://s2.ax1x.com/2019/06/26/ZmVRUK.md.png" alt="ZmVRUK.md.png" title=""></a></p><div class="md-section-divider"></div><h2 data-anchor-id="dg14" id="fpga-based-protection-system">FPGA-based Protection System</h2><p data-anchor-id="2rc0">该方法是将保护算法实现在DE-4 FPGA这样一个硬件上，实验拓扑如图3. <br>
+<img src="https://s2.ax1x.com/2019/06/26/ZmZurR.png" alt="ZmZurR.png"></p><div class="md-section-divider"></div><h1 data-anchor-id="o32h" id="结果比较">结果比较</h1><p data-anchor-id="i4u2">VSSF的响应时间结果见图4和表2 <br>
+<a href="https://imgchr.com/i/ZmZri8" target="_blank"><img src="https://s2.ax1x.com/2019/06/26/ZmZri8.png" alt="ZmZri8.png"></a> <br>
+将VSSF和FPGA硬件实现比较，比较图见图5,6与表3 <br>
+<a href="https://imgchr.com/i/ZmZ6zQ" target="_blank"><img src="https://s2.ax1x.com/2019/06/26/ZmZ6zQ.png" alt="ZmZ6zQ.png"></a> <br>
+<a href="https://imgchr.com/i/ZmZ4oV" target="_blank"><img src="https://s2.ax1x.com/2019/06/26/ZmZ4oV.png" alt="ZmZ4oV.png" title=""></a></p></div>
+</body>
+</html>

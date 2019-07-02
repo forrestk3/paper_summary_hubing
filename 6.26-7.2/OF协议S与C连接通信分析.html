@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>OF协议S与C连接通信分析</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="0ioq" id="of协议s与c连接通信分析">OF协议S与C连接通信分析</h1><p data-anchor-id="l0uw"><code>sdn</code></p><hr><p data-anchor-id="n1mb">本部分介绍在OF协议下C与S的一些通信分析，版本为OF1.0</p><div class="md-section-divider"></div><h1 data-anchor-id="oisl" id="基本信息介绍">基本信息介绍</h1><ul data-anchor-id="jopr">
+<li>创建拓扑</li>
+</ul><div class="md-section-divider"></div><pre class="prettyprint linenums prettyprinted" data-anchor-id="941a"><ol class="linenums"><li class="L0"><code><span class="pln">sudo mn </span><span class="pun">--</span><span class="pln">topo linear</span><span class="pun">,</span><span class="lit">2</span><span class="pln"> </span><span class="pun">--</span><span class="kwd">switch</span><span class="pln"> ovsk </span><span class="pun">--</span><span class="pln">controller</span><span class="pun">=</span><span class="pln">remote</span><span class="pun">,</span><span class="pln">ip</span><span class="pun">=</span><span class="lit">192.168</span><span class="pun">.</span><span class="lit">5.203</span><span class="pun">,</span><span class="pln">port</span><span class="pun">=</span><span class="lit">6633</span></code></li></ol></pre><p data-anchor-id="2k86">这里，C的IP为：192.168.5.203 <br>
+还有一些mininet查看网络基本信息的命令：</p><ol data-anchor-id="cabx">
+<li>nodes:列出所有的node</li>
+<li>net:列出所有的连接关系</li>
+<li>dump:列出所有的节点及其相关信息</li>
+</ol><div class="md-section-divider"></div><h1 data-anchor-id="1ksd" id="抓包并分析协议">抓包并分析协议</h1><p data-anchor-id="v72d">wireshark抓包图如下 <br>
+<img src="https://s2.ax1x.com/2019/06/28/ZMagmj.png" alt="ZMagmj.png" title=""> <br>
+<img src="https://s2.ax1x.com/2019/06/28/ZM0y6O.png" alt="ZM0y6O.png" title=""> <br>
+1. S发HELLO给C，C回应HELLO以初始化连接，并协商使用的协议版本。 <br>
+2. C发FEATURE_REQUEST，S回应FEATURE_REPLY，使C能获得与其连接的S的一些基本信息，如S的能力，端口信息等。FEATURE_REPLY消息结构如下。 <br>
+<img src="https://s2.ax1x.com/2019/06/28/ZMdFHA.png" alt="ZMdFHA.png" title=""> <br>
+3. 接下来为C为S设定接口配置：SET_CONFIG,GET_CONFIG_REQUEST,S回应：GET_CONFIG_REPLY <br>
+下面为一些正常的交互信息 <br>
+4. flow_mod:修改流表的信息，示意图如下 <br>
+<img src="https://s2.ax1x.com/2019/06/28/ZMdG40.png" alt="ZMdG40.png" title=""> <br>
+5. packet_in,packet_out消息： <br>
+当S收到无匹配项的数据包时，将数据包封在paket_in消息中发给C，C通过packet_out下发流表。（一般，S会将包的头封装发给C，而将包存在自己的一个buffer内，只有当buffer满了才会将整个包封装发给C）。 <br>
+6. 几个常见的协议及解释如下图 <br>
+<img src="https://s2.ax1x.com/2019/06/28/ZMdH8f.png" alt="ZMdH8f.png"> <br>
+7. 一个C添加表项到S的观察过程如下图 <br>
+<img src="https://s2.ax1x.com/2019/06/28/ZMw9P0.png" alt="ZMw9P0.png" title=""></p><p data-anchor-id="c63a">这两天看了SDN的一些基础知识，发现之前对SDN的理解还是太浅薄了些。在之前看的论文中所有有关SDN则一定会提到OF，而OF却只是SDN的一小部分，甚至可以说OF只是SDN的众多协议只的之一，而目前我对SDN的理解是：所有可以使网络向可编程方向前进的技术与概念的集合。之前看的论文可总结为：OF协议的安全研究与flood攻击分析。<strong>记于：2019.6.28</strong></p></div>
+</body>
+</html>
