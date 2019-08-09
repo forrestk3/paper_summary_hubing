@@ -17,3 +17,10 @@
 		git commit -m "你删除该文件夹的记录日志"
 		git push
 		
+
+#合作人
+本人：https://github.com/forrestk3/paper_summary_hubing.git
+
+郅：https://github.com/Ajoyzhi/my_literature
+
+郑：https://github.com/zhengyjs/TorinoZone.git

@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>DDoS attack detection and mitigation using SDN: methods, practices, and solutions</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="bl89" id="ddos-attack-detection-and-mitigation-using-sdn-methods-practices-and-solutions">DDoS attack detection and mitigation using SDN: methods, practices, and solutions</h1><p data-anchor-id="nnzk"><code class="">survey</code></p><div class="md-section-divider"></div><h2 data-anchor-id="m37j" id="bawany-n-z-shamsi-j-a-salah-k-ddos-attack-detection-and-mitigation-using-sdn-methods-practices-and-solutionsj-arabian-journal-for-science-and-engineering-2017-422-425-441">Bawany N Z, Shamsi J A, Salah K. DDoS attack detection and mitigation using SDN: methods, practices, and solutions[J]. Arabian Journal for Science and Engineering, 2017, 42(2): 425-441.</h2><p data-anchor-id="dlaf">这篇综述我其实觉得不怎么样，但不管怎么说也是综述，总结了最近几年在SDN中用于防御DDOS攻击的论文。（其实我觉得他总结得也不全。） <br>
+首先总结了DDOS的攻击的一些例子，如表1,2 <br>
+<img src="https://s2.ax1x.com/2019/07/30/eJ5NxU.png" alt="eJ5NxU.png"> <br>
+<img src="https://s2.ax1x.com/2019/07/30/eJ5BZ9.png" alt="eJ5BZ9.png"></p><div class="md-section-divider"></div><h1 data-anchor-id="4k4f" id="当前的检测困难">当前的检测困难</h1><ul data-anchor-id="w3kv">
+<li>无法区分良性与恶意流</li>
+<li>内网中的威胁：软件漏洞，恶意人员</li>
+<li>缺少商业支持</li>
+</ul><div class="md-section-divider"></div><h1 data-anchor-id="289n" id="检测方法技术分类总结">检测方法技术分类总结</h1><div class="md-section-divider"></div><h2 data-anchor-id="3ctl" id="entropy">Entropy</h2><p data-anchor-id="2e03">基本方法是通过检测正常阶段的熵以确定阈值，再实时检测并与阈值比较看是否异常。 <br>
+缺点：特征分布信息会丢失；无法检测不影响特征随机性的攻击。 <br>
+[34]Combining OpenFlow and sFlow for an effective and scalable anomaly detection and mitigation mechanism on SDN environments看过，不咋滴 <br>
+[41]An entropy-based distributed DDoS detection mechanism in software-defined networking（没看过，不咋滴） <br>
+[42]Revisiting Traffic Anomaly Detection Using Software Defined Networking（看了摘要，觉得不怎么样）</p><div class="md-section-divider"></div><h2 data-anchor-id="mrf0" id="machine-learning">Machine Learning</h2><p data-anchor-id="uhxq">[55]Lightweight DDoS flooding attack detection using NOX/OpenFlow.(看过，不怎么样) <br>
+[56]A fuzzy logic-based information security management for software-defined networks（5页的，感觉不怎么样）。 <br>
+[58]NICE: Network Intrusion Detection and Countermeasure Selection in Virtual Network Systems（期刊不错，内容是入侵检测的） <br>
+[59]普通的熵方法，不怎么样。</p><div class="md-section-divider"></div><h2 data-anchor-id="2rq6" id="traffic-pattern-analysis">traffic Pattern Analysis</h2><p data-anchor-id="3abt">通过被感染的主机有相似的行为进行检测。 <br>
+[60]Traffic Aggregation for Malware Detection(好像不怎么样) <br>
+[61]是一篇框架FRESCO,[63]7页，不怎么样。</p><div class="md-section-divider"></div><h2 data-anchor-id="v9hu" id="connection-rate">Connection Rate</h2><p data-anchor-id="5ep1">基于连接率可分为连接成功数和连接总数，被感染的host连接请求数要高，连接成功率要低 <br>
+这里列出的参考文献都不怎么样。</p><div class="md-section-divider"></div><h2 data-anchor-id="l8n5" id="integration-of-snort-and-openflow">Integration of SNORT and OPENFLOW</h2><p data-anchor-id="7wiv">当前开源的IDS：SNORT,Suricata，这里讲的是将开源的IDS用到OF里面 <br>
+总结见表4 <br>
+<img src="https://s2.ax1x.com/2019/07/31/eYtnsg.png" alt="eYtnsg.png"> <br>
+<img src="https://s2.ax1x.com/2019/07/31/eYt3iq.png" alt="eYt3iq.png"> <br>
+这篇综述感觉已经不怎么样了</p><div class="md-section-divider"></div><h1 data-anchor-id="ovfa" id="基于sdn的缓解手段">基于SDN的缓解手段</h1><p data-anchor-id="3gsf">总结见表5，里面文章都不怎么样，而且我怀疑他是不是乱加的 <br>
+<img src="https://s2.ax1x.com/2019/07/31/eYtpse.png" alt="eYtpse.png"> <br>
+丢弃包的方式会丢弃全法流，限制带宽会影响高速流。基于熵的方法需要一个固定阈值来分类包，而不同应用需要不同的敏感度来分类。</p><p data-anchor-id="2gt9">这篇综术不行。</p></div>
+</body>
+</html>
