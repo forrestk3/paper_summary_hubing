@@ -16,7 +16,18 @@
 		git rm --cache -r 你的文件夹名
 		git commit -m "你删除该文件夹的记录日志"
 		git push
-		
+
+## git 设置代理
+### 启用
+		git config --global http.proxy http://proxyuser:proxypwd@proxy.server.com:8080
+		git config --global https.proxy https://proxyuser:proxypwd@proxy.server.com:8080
+		git config --global http.sslVerify false
+###禁用
+		git config --global --unset http.proxy
+		git config --global --unset https.proxy
+###检查
+		git config --global --get http.proxy
+		git config --global --get https.proxy
 
 #合作人
 
