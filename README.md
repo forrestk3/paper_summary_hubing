@@ -29,6 +29,17 @@
 		git config --global --get http.proxy
 		git config --global --get https.proxy
 
+## 使用git导入仓库到gitee(ssh方式)
+* 先在码云中创建仓库
+* 在本地配置好用户名，邮箱,命令： `git config user.name YourName`,`git config user.email YourMail`
+* 生成密钥：`ssh-ketgen -t rsa -C "YourEmail"`,再三次回车以完成
+* 查看密钥：`cat ~/.ssh/idrsa.pub`
+* 将密钥复制到你的码云中
+* 在本地输入`ssh -T git@gitee.com`
+* 本地仓库中进行 git init,git remote等基本操作
+* 一般是可以pull的，但有时会提示 unrelated histories，这时就需要 `$git pull origin master --allow-unrelated-histories
+`,如果成功后，使用 `git push origin master:master`即可，意思是：git push 远程主机名 本地分支名：远程分支名
+
 #合作人
 
 本人：https://github.com/forrestk3/paper_summary_hubing.git

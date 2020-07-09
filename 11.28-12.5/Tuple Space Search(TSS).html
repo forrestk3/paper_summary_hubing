@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Tuple Space Search(TSS)</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="fyc5" id="tuple-space-searchtss">Tuple Space Search(TSS)</h1><p data-anchor-id="f6i0"><code>algorithm</code></p><div class="md-section-divider"></div><h2 data-anchor-id="x6a8" id="这部分涉及到ovs内容太多不是一两天能看完的">这部分涉及到OVS，内容太多，不是一两天能看完的</h2><p data-anchor-id="6xuv"><a href="https://www.sdnlab.com/15713.html" target="_blank">本文参考自此</a> <br>
+本文参考网上教程介绍TSS算法的主要过程，它是当前OVS进行流表查找的核心。其中网上有关于OVS源码分析系列，<a href="http://blog.csdn.net/yuzhihui_no1/article/details/39504139" target="_blank">网址在此</a>。</p><div class="md-section-divider"></div><h1 data-anchor-id="t2st" id="背景">背景</h1><p data-anchor-id="0yfh">在一个网络交换设备中，报文的处理流程可简化为以下三个步骤：协议解析，表项查找，动作执行（包含转发、对报文的修改等动作），如图1所示。由于表项的数目可能很大，匹配的形式包括最长前缀匹配、精确匹配、范围匹配，设计高效的查表算法一直是网络研究人员追求的目标。表项查找设计涉及到两个方面：表项数据结构的组织和查表算法的执行。<img src="https://img1.sdnlab.com/wp-content%2Fuploads%2F2016%2F01%2FOpen-vSwitch-flow-table-picture-1.png" alt="" title=""> <br>
+OVS是部署在服务器内部，用于实现虚拟机之间交换的OpenFlow软件交换机。软件交换机通常运行在通用处理器（CPU）之上，因此其查表时间相比于用ASIC、TCAM、NP等硬件实现更慢。与传统的路由器、交换机不同，OpenFlow的匹配域包含了L2-L4等匹配域。由于匹配域增多，为了防止表项产生组合爆炸问题，OpenFlow规范中指出，其转发过程采用多级流水线查表设计。这样一来，OVS高效查表的难度和挑战进一步加大，其查表设计就显得尤为重要，直接影响软件转发的性能。 <br>
+本文将从表项查找的两个方面，表项数据结构的组织（<strong>Megaflow Cache+Microflow Cache）</strong>和<strong>查表算法（Tuple Space Search）</strong>，对OVS的流表查找过程进行详细分析。</p><div class="md-section-divider"></div><h2 data-anchor-id="xrqf" id="早期">早期</h2><p data-anchor-id="6wqh"><strong>Microflow Cache方法：</strong>基于精确的hash查找，复杂度O(1)，缓存多级查表结果。一条流的首报文进入用户态查表后，后续的报文都会命中内核中的Microflow Cache。但对于短流来说还是要进入用户态进行多级流表查找。 <br>
+<strong>Megaflow Cache方法：</strong>是为了解决上面问题产生的，它自带通配查表，因此能减少报文到用户空间查表的次数,但查表复杂度为O(m/2)，因此增加了查表次数。 <br>
+<strong>Megaflow Cache + Microflow Cache</strong>：本Microflow Cache为一个索引值，指向最近一次查Megaflow Cache表项，因此报文的首次查表就不需要进行线性地链式搜索，可直接对应到其中一张Megaflow的元组表。查找开销对比如下： <br>
+<img src="https://s2.ax1x.com/2019/11/20/MWmMeH.png" alt="MWmMeH.png" title=""> <br>
+附带提两点。1，在OVS的NEWS文件夹中记录了每个版本更新的相关细节，包括流Cache的设计，所以读者可在里面搜索到OVS功能演进过程的所有信息。2，具体Megaflow的计算过程尽管不是本文讨论的范围，但的确非常精妙，有兴趣的读者可关注一下。</p><div class="md-section-divider"></div><h1 data-anchor-id="19zg" id="元组空间搜索算法tss">元组空间搜索算法(TSS)</h1><p data-anchor-id="vzyc">由于OpenFlow的匹配域扩展到了十二个字段甚至更多的字段，其协议解析后提取的查表关键字（即sw_flow_key）数据结构表示如图2所示。 <br>
+<img src="https://img1.sdnlab.com/wp-content%2Fuploads%2F2016%2F01%2FOpen-vSwitch-flow-table-picture-2.png" alt=""> <br>
+若将匹配域中的每一个字段又被称为一个维度，多字段的软件查表算法大体上可以分为两类：单维组合分类算法和多维联合分类算法。单维组合查找算法的主要思想是：单独地对数据包每个字段进行匹配，并对每个字段的匹配结果进行合并从而找到最终匹配的规则，其代表包括递归流分类（RFC）、位向量（BV）等。多维联合分类查找算法的大致思想是不单独地考虑每个字段内部特点，而是简单地把包头的所有字段看作一个维度，进行联合查找，其代表包括决策树（Decision tree）、元组空间搜索（TSS）等。 <br>
+由于OVS选择采用元组空间查找(Tuple Space Search，TSS)，因此这里只重点介绍TSS算法.TSS算法的主要思想是，<strong>将所有规则按照各字段前缀长度的组合划分成比规则数目小得多的元组集合，然后在这些元组里进行哈希查找。</strong>举个例子，有如下规则集，如下表所示，包含三个匹配域和10条对应的规则。表中<strong>R1-R10为规则，F1、F2、F3为三个匹配字段</strong>，每个字段均为4bit。 <br>
+<img src="https://s2.ax1x.com/2019/11/20/MWmtl8.png" alt="MWmtl8.png"> <br>
+用[x，y，z]中的x、y、z分别表示F1、 F2、F3的前缀长度。则10条规则表示如下。 <br>
+<strong>表3 规则前缀集</strong> <br>
+<img src="https://s2.ax1x.com/2019/11/20/MWmrYq.png" alt="MWmrYq.png"></p><p data-anchor-id="bni1">由上表可知规则可分为三类，R1、R3、R6∈[1,2,3]，R5、R8、R9∈[0,4,0]，R2、R4、R7、R10∈[2,1,3]。在不考虑规则优先级的情况下，TSS的查找表构造如图3所示。 <br>
+<img src="https://img1.sdnlab.com/wp-content%2Fuploads%2F2016%2F01%2FOpen-vSwitch-flow-table-picture-3.png" alt=""> <br>
+所以最多只需要三次Hash查找，即可找到对应表项。可以看到TSS的一个最大优点是，当所有规则的各字段长度的组合相对较少时，TSS算法是很高效的。如例子中的，10条规则只需要3次hash查找即可。TSS的缺点是当所有规则的各字段的组合很多时，最坏情况下的搜索次数就变为n（n为规则的数量）。在上个例子中，假设所有规则的字段组合都不一致，那么TSS查表次数就为10，退化为最原始的顺序查表。因此，TSS的算法是否高效与转发规则的特征有直接的关系。</p><p data-anchor-id="bmlo">OVS选择TSS的原因： <br>
+（1）在虚拟化数据中心环境下，流的添加删除比较频繁，TSS支持高效的、常数时间的表项更新； <br>
+（2）TSS支持任意匹配域的组合； <br>
+（3）TSS存储空间随着流的数量线性增长。 <br>
+综上原因，OVS选择了TSS查表算法，并对其进行了一些优化（优化的一些手段，例如优先级排序、分段hash查找等等，详见论文和源码）。结合上面所提到的Microflow Cache和Megaflow Cache，给出目前OVS中内核态查表的流程，如图4所示。 <br>
+<img src="https://img1.sdnlab.com/wp-content%2Fuploads%2F2016%2F01%2FOpen-vSwitch-flow-table-picture-4.png" alt=""> <br>
+图中红色标记的Mask_cache_array即为Microflow Cache，是个地址，存放的是上一次匹配命中的Megaflow中某个元组表的索引值。其结构如下。</p><div class="md-section-divider"></div><pre class="prettyprint linenums prettyprinted" data-anchor-id="8azt"><ol class="linenums"><li class="L0"><code class="language-c"><span class="kwd">struct</span><span class="pln"> mask_cache_entry </span><span class="pun">{</span></code></li><li class="L1"><code class="language-c"><span class="pln">    u32 skb_hash</span><span class="pun">;</span><span class="com">//SKB中五元组hash后的值</span></code></li><li class="L2"><code class="language-c"><span class="pln">    u32 mask_index</span><span class="pun">;</span><span class="com">//掩码数组Mask_array的索引值</span></code></li><li class="L3"><code class="language-c"><span class="pun">};</span></code></li></ol></pre><p data-anchor-id="fkwd">Mask_array是个指针数组，数组中每个元素存放的是掩码，每个掩码就代表一个元组表，。每条流的首报文都会遍历这个数组，相当于遍历所有的元组表。每个元组表采用hash的方式，用链式解决Hash冲突。</p><div class="md-section-divider"></div><pre class="prettyprint linenums prettyprinted" data-anchor-id="2p4f"><ol class="linenums"><li class="L0"><code class="language-c"><span class="kwd">struct</span><span class="pln"> mask_array </span><span class="pun">{</span></code></li><li class="L1"><code class="language-c"><span class="pln">    </span><span class="kwd">struct</span><span class="pln"> rcu_head rcu</span><span class="pun">;</span><span class="com">//RCU控制</span></code></li><li class="L2"><code class="language-c"><span class="pln">    </span><span class="typ">int</span><span class="pln"> count</span><span class="pun">,</span><span class="pln"> max</span><span class="pun">;</span><span class="com">//掩码数组的计数和最大值</span></code></li><li class="L3"><code class="language-c"><span class="pln">    </span><span class="kwd">struct</span><span class="pln"> sw_flow_mask __rcu </span><span class="pun">*</span><span class="pln">masks</span><span class="pun">[];</span><span class="com">//掩码存放的数组</span></code></li><li class="L4"><code class="language-c"><span class="pun">};</span></code></li></ol></pre><p data-anchor-id="eyay">参考文章 <br>
+文中的分析主要参考来源于两篇论文以及OVS2.4源码，如下： <br>
+<a href="https://www.sdnlab.com/15713.html" target="_blank">1</a> N. Shelly, E. Jackson, T. Koponen, N. McKeown, and J. Rajahalme. Flow Caching for High Entropy Packet Fields. In Proc. of HotSDN, 2014.</p><p data-anchor-id="lesy">[2] Pfaff B, Pettit J, Koponen T, et al. The design and implementation of Open vSwitch[C]//12th USENIX Symposium on Networked Systems Design and Implementation. 2015.（NSDI 2015 Best Paper Award）</p><p data-anchor-id="dogz">[3] Open vSwitch version 2.4. <a href="http://openvswitch.org/releases/openvswitch-2.4.0.tar.gz" target="_blank">http://openvswitch.org/releases/openvswitch-2.4.0.tar.gz</a></p></div>
+</body>
+</html>

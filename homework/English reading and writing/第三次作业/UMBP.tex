@@ -1,0 +1,96 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage{times,graphicx, amsfonts}
+\usepackage{stmaryrd}
+\usepackage{bbm}
+\usepackage{amsmath}
+\usepackage{txfonts}
+\usepackage{amssymb}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{url}
+\usepackage{cite}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{setspace}
+\usepackage[UTF8,scheme=plain]{ctex}
+
+% *** GRAPHICS RELATED PACKAGES ***
+%
+\ifCLASSINFOpdf
+  % \usepackage[pdftex]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../pdf/}{../jpeg/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\else
+  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+  % will default to the driver specified in the system graphics.cfg if no
+  % driver is specified.
+  % \usepackage[dvips]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../eps/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.eps}
+\fi
+\hyphenation{op-tical net-works semi-conduc-tor}
+\begin{document}
+\title{MLDS:Machine Learning Based SYN Flooding Defense Scheme in SDN}
+
+\author{Bing~Hu,
+        Rick~Sanchez,
+        Morty~Smith,
+        Beth~Smith,
+        Summer~Smith,
+        Jerry~Smith
+
+\thanks{Bing~Hu, Rick~Sanchez, and Summer~Smith are with the College of
+Computer Science and Technology, Northeastern University,
+Shenyang, 110169, China, e-mail: (Hb\_688@163.com,
+Rick@gmail.com, Summer@gmail.com).}
+\thanks{Morty~Smith, Beth~Smith, Jerry~Smith are with the Colloge of Computer Science and Engineering,
+Harvard University, Smith Campus Center,1350 Massachusetts Avenue,Cambridge, MA 02138, e-mail:
+(Morty@gmail.com, Beth@gmail.com, Jerry@gmail.com).}
+}
+
+
+\markboth{IEEE SYMPOSIUM ON SECURITY AND PRIVACY}
+{Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls
+for Journals}
+
+\maketitle
+
+\begin{abstract}
+DDoS attack has brought significant damage to the current network in recent years, and the SYN flooding attack is deeply appreciated by attackers for the reason of it's indistinguishable packets. With the development of SDN and machine learning technology,this paper aim at  mitigating the attack by the combination of them. We proposed using SDN controller to collect global network state information of legitimate traffic and calculating the feature vector, and utilizing the random forest algorithm for model training. The well trained model can be used to monitor the net work status and will extract the characteristics of illegitimate packets if abnormal traffic appeared. The former extracted characteristics is significant for the discarding of attack traffic by utilizing the global controllability of SDN controller. The experiments showed that this approach can discard most of the attack traffic and works well for the defending of SYN flooding attack.The network enviroment will be more secure and stable were this method widespread used.
+\end{abstract}
+
+
+\begin{IEEEkeywords}
+Machine Learning, Random Forest, SYN Flooding Defense, Load Balance, SDN.
+\end{IEEEkeywords}
+
+
+\IEEEpeerreviewmaketitle
+
+
+
+\section{Introduction}
+
+本文是虚构的，包括期刊和作者名以及作者的归属信息，还有其他所有内容都是虚构的，因为我并没有idea
+作者名字都是来自一个我很喜欢
+的一个动漫：Rick and Morty, Morty 是孙子，Rick 是爷爷，妈妈叫 Beth，爸爸叫 Jerry,
+ Summer 是姐姐讲的是一个爷爷带着孙子经历各种宇宙奇幻冒险的故事。这里将 Morty, Jerry,
+  Beth 的 affliation 改为了哈佛大学希望有朝一日能真的和那个学校的人合作！
+
+
+
+%---------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%---------------------------------------------------------------------------
+
+
+
+\end{document}

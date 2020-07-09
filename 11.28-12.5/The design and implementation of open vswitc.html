@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>The design and implementation of open vswitc</title>
+</head>
+<body>
+<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><div class="md-section-divider"></div><h1 data-anchor-id="ok4s" id="the-design-and-implementation-of-open-vswitc">The design and implementation of open vswitc</h1><p data-anchor-id="fd7l"><code>sdn</code> <br>
+Pfaff B, Pettit J, Koponen T, et al. h[C]//12th {USENIX} Symposium on Networked Systems Design and Implementation ({NSDI} 15). 2015: 117-130.</p><div class="md-section-divider"></div><h2 data-anchor-id="1dms" id="2019-12-5-这篇真的很不错">2019-12-5 这篇真的很不错。</h2><p data-anchor-id="h9sy">看了NSDI发表会议的展示视频，Ben Pfaff作的展示，他长这样： <br>
+<img src="https://s2.ax1x.com/2019/12/05/Q8K7id.png" alt="Q8K7id.png"> <br>
+本篇是best paper。</p><div class="md-section-divider"></div><h1 data-anchor-id="hh5z" id="基本介绍">基本介绍</h1><p data-anchor-id="ne0i">Open vSwitch:vitual switch <br>
+supported: <br>
+<img src="https://s2.ax1x.com/2019/12/02/QnO1Bt.png" alt="QnO1Bt.png"></p><p data-anchor-id="vs0q">架构： <br>
+<img src="https://s2.ax1x.com/2019/12/02/QnOyNT.png" alt="QnOyNT.png"> <br>
+绿色的为OVS部分。 <br>
+网络虚拟化中vS占着很重要的地位，但早期的vS不开源，且效率不好，这使得本OvS大受欢迎。本文中提出的Open vSwitch性能 高且通用性好。在对OvS的设计中考虑的问题：</p><ul data-anchor-id="ieg5">
+<li>Resource sharing.对common case进行优化，因为现实中worst-case发生的次数很少，因此作者着重使用流缓存。</li>
+<li>Placement.当有几行个vs相连时，很远处的VS状态变化可能会影响本VS。</li>
+<li>SDN,use case, and ecosytem.与其他VS的不同之处：本OVS一开始就是OF Switch，有能通过OF重编程的能力。且作者的OvS是开源的、多平台的。</li>
+</ul><div class="md-section-divider"></div><h1 data-anchor-id="qdbn" id="design">Design</h1><p data-anchor-id="ns2o">OVS的包交付功能有两个部分组成，其架构如图1 <br>
+<img src="https://s2.ax1x.com/2019/12/05/Q81Ltg.png" alt="Q81Ltg.png" title=""></p><ul data-anchor-id="ua68">
+<li>ovs-vswitchd:用户态查找流表功能</li>
+<li>datapath:内核态交付功能 <br>
+当Datapath从NIC接到数据包后先查是否有从ovs-vswitch获得的配置缓存action，有则执行交付，否则交给ovs-vswitchd处理（即交到用户态处理），处理好后将包交给datapath交付并缓存其action.OVS后续版本中datapath有两层缓冲，在第四节中详细介绍。这个<strong>两层缓存功能是本文的核心内容。</strong></li>
+</ul><p data-anchor-id="pmgw">OVS用OF进行配置，由ovs-vswitchd从C处接收流表，这可使datapath不需要知道OF的细节，同时C也不知道缓存，用户态，内核态的组件。 对包来说只知自己被匹配，被应用于最高优先级的action，OVS还能有OF扩展，这使得其更适用于网络虚拟化。</p><p data-anchor-id="j7na">**包分类：**OVS使用TSS算法进行包分类，每种匹配方式创一个hash表，来了包就在各hash表中查找，若匹配多个hash表，则高优先级生效。尽管查找复杂度很高，介实际效果却很不错，因为：1.它支持高效的连续更新使其适用于虚拟化环境；2.TSS算法可通用于任意个数的包头而不需对算法进行更改；3.tupel space search(TSS)使用的内存与流数线性相关。</p><p data-anchor-id="9hdb">OF通过多级流表缓解表项爆炸问题，OVS通过添加meta-data使一个包在处理时可忽视其目的地。OVS的配置都存在于ovsdb-server中，如图1,它需要在configuration database中控制，C要控制ovsdb-server需要单独的协议。</p><div class="md-section-divider"></div><h1 data-anchor-id="xrhz" id="4flow-cache-design虽然少但是核心内容">4.Flow cache design（虽然少，但是核心内容）</h1><div class="md-section-divider"></div><h2 data-anchor-id="05c4" id="41-microflow-caching">4.1 microflow Caching</h2><p data-anchor-id="x2d9">一开始OVS的OF处理在内核进行，可以达到足够好的性能。然而其开发复杂，不久便变得不可行了。解决方法为将内核模块重实现为microflow cache来精准匹配包，但由于太过细料度使得对于小流会有太多的miss，从而过多访问用户空间影响效率。对microflow进行了很多次尝试改进，原文如下： <br>
+<img src="https://s2.ax1x.com/2019/12/05/Q8aynJ.png" alt="Q8aynJ.png"> <br>
+最终决定重新进行缓存设计。 <br>
+原设计如下图所示： <br>
+<a href="https://imgse.com/i/Q8dabd" target="_blank"><img src="https://s2.ax1x.com/2019/12/05/Q8dabd.md.png" alt="Q8dabd.md.png"></a> <br>
+来了流先在microflow处进行查找看能不能hit，能就直接交付，不能就到用户态进行查找，找到后再存入microflow以便后续流进行hit。 <br>
+<strong>该方法在有大量短期流时性能不佳</strong></p><div class="md-section-divider"></div><h2 data-anchor-id="8rk5" id="42-megaflow-caching">4.2 megaflow caching</h2><p data-anchor-id="445m">megaflow使用更近似流表的处理方法，但无优先级，无pipeline classifier，因此往megaflow插项时要整合整个flowtable的内容。在megaflow中查找近似于通常的包娄类，平均需查找（n+1）/2次。OVS中使用microflow当一级缓存，其映射megaflow的匹配项，当第一个包匹配microflow后，其后续包能连续匹配到megaflow,因此降低megaflow查询到价。 <br>
+megaflow flow table是流表叉乘的一个子集，OVS用户空间用递增，被动的方式计算缓存以使megaflow的项不会太多。用户空间用流表分类包时记录使用的包头位域并以此生成megaflow匹配，若项太多，新的megaflow项会挤出旧的megaflow项。具体设计如下图： <br>
+<img src="https://s2.ax1x.com/2019/12/05/Q8rLNj.png" alt="Q8rLNj.png"> <br>
+<strong>（其实中间还跳过了只有megaflow设计的版本）</strong>。来包时先看能不能在microflow cache中hit,不能则再在megaflow cache中匹配，匹配到了就更新microflow,匹配不到就到用户态流表中查找，然后更新缓存。</p><div class="md-section-divider"></div><h1 data-anchor-id="2xay" id="caching-aware-packet-classification">Caching-aware packet classification</h1><div class="md-section-divider"></div><h2 data-anchor-id="9epb" id="problem">problem</h2><p data-anchor-id="cjqy">流表处理包时，追踪其用到的位首当其冲以此构建megaflow entry，但使用TSS算法搜索时有仍有改进的地方，例如：在有用户进行端口扫描时只用到了L2层的协议，此时大量的包只要匹配l2层即可，但这些包中如果有一个包用到了L4层的PORT，则其他所有的包都要对PORT进行匹配，因此也会浪费匹配时间，作者并不知道有何改进的办法，因此只能求近似解。后续讲一些改进方法。</p><div class="md-section-divider"></div><h2 data-anchor-id="fuae" id="tuple-priority-sorting">tuple priority sorting</h2><p data-anchor-id="6jkl">使用TSS搜索中若有优先级，则每次都要搜完全表才得到执行action,本文将entry依优级排序即可解决此问题。具体算法如图2. <br>
+<img src="https://s2.ax1x.com/2019/12/05/Q8g3ef.png" alt="Q8g3ef.png" title=""></p><div class="md-section-divider"></div><h2 data-anchor-id="c9la" id="staged-lookup">staged lookup</h2><p data-anchor-id="liy0">在TSS搜索中若要匹配，须使field的每一位都匹配。不同的流的匹配域各不相同，若匹配field子集便可决定无法match便可不用匹配所有field从而获得性能提升，而hash搜索无法进行子域匹配，得用树存储或per-field hash会耗更多的内存。本文将field以粒度分为4个等级：metadata,L2,L3.L4；将每个tuple原1个hash分为4个hash,分别为：metadata,metadata and L2 fields,metadata L2 L3 fields，所有域；若某个hash搜索不匹配则overall的搜索也不，只有最后一步搜索的域会被加到megaflow. <br>
+这种优化方法能支持任何支持的子field，这个划分依据为rule of thumb。在后步骤中增量包含前步骤的filed是为了方便hash的增量计算。据观察速度略增，因为在早期不用计算all field的full hash。这种优化使得生产部署可灵活，在多个data path中可以使每个megaflow匹配不同的field。</p><div class="md-section-divider"></div><h2 data-anchor-id="3hbo" id="prefix-tracking">prefix tracking</h2><p data-anchor-id="4umt">在匹配IP时遵循的是最长前缀法则，作者在IP查找时进行优化（例子是10进制的，实际操作使用的是二进制），在用TSS匹配IP时先使用树结构分类器进行处理，树查找可以决定所需要的最大megaflow前缀长度和可跳过的tuple而不影响准确性。如对IP rule: <br>
+<img src="https://s2.ax1x.com/2019/12/05/Q84lOs.png" alt="Q84lOs.png" title=""> <br>
+构造树： <br>
+<img src="https://s2.ax1x.com/2019/12/05/Q84dl4.png" alt="Q84dl4.png" title=""> <br>
+在查找时由根开始，若能一直匹配到leaf则megaflow不需要匹配剩余的位，如10.1.3.5在树中表示为10.1.3/24,20.0.5.1在树中表示为20/8,可以让megaflow少匹配一些位而提高效率，若未到leaf就无法匹配则说明IP有不匹配的，因此megaflow需要插新的flow才可。本匹配可简化搜索，当某一长度无法匹配时，其更长也必定无法匹配。图3为树的匹配算法伪代码。 <br>
+<img src="https://s2.ax1x.com/2019/12/05/Q8Hi6S.png" alt="Q8Hi6S.png"></p><p data-anchor-id="u7mb">本算法的好处：有用所有的megaflow都match完整的IP 地址；本方法也适用于L4的PORT。</p><div class="md-section-divider"></div><h2 data-anchor-id="dgwj" id="classifier-partitioning">classifier partitioning</h2><p data-anchor-id="5w3v">当匹配时若当前域不匹配则其tuple直接跳过以减少tuple的匹配时间。</p><div class="md-section-divider"></div><h1 data-anchor-id="wi4j" id="cache-invalidation">Cache invalidation</h1><p data-anchor-id="ycvx">网络状态改变后megaflow里的entry就失效了，崦OVS能精准地识别出需要被改变的megaflow。早期的OVS将改变分为两类，第一类为无法精确识别，需遍历megaflow来对比action是否相同，该方法并不十分耗时，但由于OVS是单线程的因此检查时无法对packet进行处理，因此OVS2.0将cache flow数限制在1000-2500.第二类为对datapath flow的小变，早期方法为将属性加tag，当有改变时添加tag然后统一修改，如：MAC的对应port改变了，OVS为该改变增加tag叠加变化，再批量检查tag来更改action。 <br>
+标签降低了处理效率，OVS2.0中将流安装改为多线程从而重验证时不用等待。在OVS2.1中使用多线程进行缓存重验证。用户态定期统计内核态的流统计结果，可知哪些flow常被使用，当流项少于设定的最大表值时空闲10s的flow被移除内核空间，流项数多于设定最大值时空间时是会缩短。对于microflow，其最大长固定，新项替换旧项，因此不需定期更新。</p><div class="md-section-divider"></div><h1 data-anchor-id="7cqu" id="evaluation">Evaluation</h1><div class="md-section-divider"></div><h2 data-anchor-id="c8b3" id="生产性能测试">生产性能测试</h2><p data-anchor-id="549o">每10分种从1000个运行了OVS的管理程序中获得一次统计数据</p><ul data-anchor-id="u8dc">
+<li>Cache size:观测戎间megaflow数的CDF如图4,可见小的cache容量足以满足。 <br>
+<img src="https://s2.ax1x.com/2019/12/05/QGMn4H.png" alt="QGMn4H.png" title=""></li>
+<li>cache hit rates:图5为击率，实线为整体击中率，点线为更少包交付的那25%的击中率，虚线为更多包交付那部分击中率，分别为：97.7%，74.7%，98% <br>
+<a href="https://imgse.com/i/QGMDK0" target="_blank"><img src="https://s2.ax1x.com/2019/12/05/QGMDK0.md.png" alt="QGMDK0.md.png"></a></li>
+<li>CPU usage:内核态无法单独测CPU，因此看用户态CPU与每稍MISS数有关，结果见图7,可见80%的OVS都只耗5%的CPU。</li>
+<li>Outliers:图7中的超过100%那部分离散点单独测试，发现它们都有bug,该bug早已在OVS2.3中修复。</li>
+</ul><div class="md-section-divider"></div><h2 data-anchor-id="66jk" id="caching-microbenchmark">Caching microbenchmark</h2><p data-anchor-id="ud7p">运行简单流表实验来验证cache的好处，flows: <br>
+<img src="https://s2.ax1x.com/2019/12/05/QG3CdK.png" alt="QG3CdK.png" title=""> <br>
+使用stage lookup时目的不是9.1.1.1的不需匹配TCP Port，前缀跟踪方法可使megaflow忽视DIP的一些位。</p><p data-anchor-id="h5m2"><strong>Cache layer performance</strong>:机器配置：双核2.0 GH和Xeon处理器，双intel 10- <br>
+Gb NIC,使用Netperf的TCP_CRR测试生成连接，用400个netperf同时进行，1分钟报告一次结果。测用户态性能时关闭megaflow caching，测试结果如表1. <br>
+<img src="https://s2.ax1x.com/2019/12/05/QGGLi8.png" alt="QGGLi8.png"> <br>
+测megaflow时半掉microflow，表2为结果，可见无microflow时TCP_CRR性能从120降到了92ktps.图8为在microflow关掉的情况下长流交付性能，当允许microflow时约为10.6Mpps。 <br>
+<img src="https://s2.ax1x.com/2019/12/05/QGJKdx.png" alt="QGJKdx.png" title=""> <br>
+对于随机生成的flow entry单核hash查找性能为6.8M/s，即对于10tuple可达到680,000次分类。 <br>
+<strong>classifier optimization benefit</strong>：优化了内核态和用户态的交互，因而降低了CPU使用率，<strong>表1中可见</strong>，内核流数降，内核无组数增，内核分类代价增，但测得内核CPU时间降，TCP_CRR增，结果说明是值得的。 <br>
+<strong>Comparison to in-kernel switch</strong>：与linux内核的网桥对比，能实现相似的性能但多耗些CPU，本OVS更适用于per-packet的处理。</p><p data-anchor-id="120w"><strong>Future work</strong>:1.有状态服务；2.利用用户态网络增加性能，当前是尽量减少用户态干预；3.利用硬件报告匹配规则有利于提高megaflow分类性能。</p></div>
+</body>
+</html>
